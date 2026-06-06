@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { DesignCategory } from '@/data';
 import { cn } from '@/lib/utils';
+import { useSidebarRef } from '@/providers/SidebarContext';
 
 interface CategoryNodeProps {
   category: DesignCategory;
@@ -23,6 +24,7 @@ export function CategoryNode({
   onSelectDesign,
 }: CategoryNodeProps) {
   const [hoveredDesign, setHoveredDesign] = useState<string | null>(null);
+  const sidebarRef = useSidebarRef();
 
   const Icon = category.icon;
 
@@ -76,6 +78,7 @@ export function CategoryNode({
                 onSelect={onSelectDesign}
                 onMouseEnter={() => setHoveredDesign(design.id)}
                 onMouseLeave={() => setHoveredDesign(null)}
+                sidebarRef={sidebarRef}
               />
             </li>
           ))}
@@ -92,6 +95,7 @@ interface DesignItemProps {
   onSelect: (designId: string) => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
+  sidebarRef: React.RefObject<HTMLElement>;
 }
 
 function DesignItem({
@@ -101,62 +105,92 @@ function DesignItem({
   onSelect,
   onMouseEnter,
   onMouseLeave,
+  sidebarRef,
 }: DesignItemProps) {
   const itemRef = useRef<HTMLButtonElement>(null);
-  const [selectionStyle, setSelectionStyle] = useState<React.CSSProperties>({});
+  const [indicatorRect, setIndicatorRect] = useState<DOMRect | null>(null);
+  const resizeObserverRef = useRef<ResizeObserver>();
 
-  useEffect(() => {
-    if (isSelected && itemRef.current) {
-      updateSelectionPosition();
-      window.addEventListener('resize', updateSelectionPosition);
-      window.addEventListener('scroll', updateSelectionPosition, true);
-    }
-    return () => {
-      window.removeEventListener('resize', updateSelectionPosition);
-      window.removeEventListener('scroll', updateSelectionPosition, true);
-    };
-  }, [isSelected]);
-
-  const updateSelectionPosition = () => {
+  const updatePosition = useCallback(() => {
     const item = itemRef.current;
-    if (!item) return;
+    const sidebar = sidebarRef.current;
+    if (!item || !sidebar || !isSelected) return;
 
-    const rect = item.getBoundingClientRect();
-    const sidebarRect = item.closest('aside')?.getBoundingClientRect();
+    const itemRect = item.getBoundingClientRect();
+    const sidebarRect = sidebar.getBoundingClientRect();
 
-    if (!sidebarRect) return;
+    // Account for sidebar padding (nav has p-3 = 12px)
+    const navPadding = 12;
+    const contentLeft = sidebarRect.left + navPadding;
+    const contentWidth = sidebarRect.width - navPadding * 2;
 
-    const itemWidth = rect.width;
-    const sidebarWidth = sidebarRect.width;
-    const itemLeft = rect.left - sidebarRect.left;
+    const itemLeft = itemRect.left - contentLeft;
+    const itemWidth = itemRect.width;
 
-    let left = 0;
-    let width = itemWidth;
-
+    let left = Math.max(0, Math.min(itemLeft, contentWidth - itemWidth));
     if (itemLeft < 0) {
       left = 0;
-      width = itemWidth + itemLeft;
-    } else if (itemLeft + itemWidth > sidebarWidth) {
-      left = sidebarWidth - itemWidth;
-      width = itemWidth;
-    } else {
-      left = itemLeft;
+    } else if (itemLeft + itemWidth > contentWidth) {
+      left = contentWidth - itemWidth;
     }
 
-    setSelectionStyle({
-      left: `${left}px`,
-      width: `${width}px`,
-      top: `${rect.top - sidebarRect.top}px`,
-      height: `${rect.height}px`,
-    });
-  };
+    setIndicatorRect({
+      ...itemRect,
+      left: contentLeft + left,
+      top: itemRect.top,
+      width: itemWidth,
+      height: itemRect.height,
+    } as DOMRect);
+  }, [isSelected, sidebarRef]);
+
+  useEffect(() => {
+    if (!isSelected) {
+      setIndicatorRect(null);
+      return;
+    }
+
+    updatePosition();
+    
+    // Observe item size changes
+    if (itemRef.current) {
+      resizeObserverRef.current = new ResizeObserver(updatePosition);
+      resizeObserverRef.current.observe(itemRef.current);
+    }
+
+    // Update on scroll/resize
+    window.addEventListener('scroll', updatePosition, { passive: true });
+    window.addEventListener('resize', updatePosition);
+    
+    // Also listen for sidebar width changes
+    const sidebar = sidebarRef.current;
+    if (sidebar) {
+      const sidebarObserver = new ResizeObserver(updatePosition);
+      sidebarObserver.observe(sidebar);
+      return () => {
+        sidebarObserver.disconnect();
+      };
+    }
+  }, [isSelected, updatePosition, sidebarRef]);
+
+  useEffect(() => {
+    return () => {
+      resizeObserverRef.current?.disconnect();
+      window.removeEventListener('scroll', updatePosition);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [updatePosition]);
 
   return (
     <>
-      {isSelected && (
+      {isSelected && indicatorRect && (
         <div
-          className="pointer-events-none fixed z-50 bg-primary/20 border border-primary/30 rounded-md shadow-lg shadow-primary/10 animate-scale-in"
-          style={selectionStyle}
+          className="pointer-events-none fixed z-[60] bg-primary/20 border border-primary/40 rounded-md shadow-xl shadow-primary/20 animate-scale-in transition-all duration-150 ease-out"
+          style={{
+            left: indicatorRect.left,
+            top: indicatorRect.top,
+            width: indicatorRect.width,
+            height: indicatorRect.height,
+          }}
           aria-hidden="true"
         />
       )}
@@ -172,7 +206,7 @@ function DesignItem({
           'hover:bg-accent hover:text-foreground',
           'transition-colors duration-150',
           'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:ring-offset-background',
-          isSelected && 'bg-accent font-medium text-foreground z-10',
+          isSelected && 'bg-accent font-medium text-foreground z-10 relative',
           isHovered && !isSelected && 'bg-accent/50'
         )}
       >
