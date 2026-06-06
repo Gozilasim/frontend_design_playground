@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Palette, Image, Grid, Minimize2, Maximize2 } from 'lucide-react';
+import { Palette, Image, Minimize2, Maximize2 } from 'lucide-react';
 import { useDesignContext } from '@/providers/DesignProvider';
 import { BackgroundConfig } from '@/data/designRegistry';
+import { DropdownPortal } from '@/components/ui/DropdownPortal';
 import { cn } from '@/lib/utils';
 
 const backgroundPresets: BackgroundConfig[] = [
@@ -88,7 +89,7 @@ export function BackgroundControl() {
   const currentStyle = getBackgroundStyle(background);
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div>
       <button
         ref={buttonRef}
         type="button"
@@ -106,83 +107,84 @@ export function BackgroundControl() {
         <Palette className="text-muted-foreground h-5 w-5" />
       </button>
 
-      {isOpen && (
-        <div
-          className="absolute right-0 top-full z-50 mt-1.5 w-64 origin-top-right animate-scale-in rounded-lg border border-border bg-popover p-3 shadow-lg"
-          role="listbox"
-          aria-label="Background presets"
-        >
-          <div className="mb-3 flex items-center gap-2">
-            <label className="text-muted-foreground flex cursor-pointer items-center gap-2 text-sm">
-              <input
-                type="color"
-                value={customColor}
-                onChange={(e) => {
-                  setCustomColor(e.target.value);
-                  dispatch({
-                    type: 'SET_BACKGROUND',
-                    payload: { type: 'solid', value: e.target.value },
-                  });
-                }}
-                className="h-6 w-6 cursor-pointer rounded border border-border"
-                aria-label="Custom color"
-              />
-              <span>Custom</span>
-            </label>
-            <label className="text-muted-foreground flex cursor-pointer items-center gap-2 text-sm">
-              {/* eslint-disable-next-line jsx-a11y/alt-text */}
-              <Image className="h-4 w-4" />
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="sr-only"
-                aria-label="Upload background image"
-              />
-              <span>Image</span>
-            </label>
-          </div>
-
-          <div className="grid max-h-60 grid-cols-4 gap-1.5 overflow-y-auto">
-            {backgroundPresets.map((preset, index) => (
-              <button
-                key={index}
-                type="button"
-                onClick={() => handlePresetSelect(preset)}
-                role="option"
-                aria-selected={background.type === preset.type && background.value === preset.value}
-                className={cn(
-                  'relative aspect-square rounded border-2 transition-all',
-                  'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
-                  background.type === preset.type && background.value === preset.value
-                    ? 'scale-105 border-primary'
-                    : 'border-transparent hover:border-border'
-                )}
-                style={getBackgroundStyle(preset)}
-              >
-                {background.type === preset.type && background.value === preset.value && (
-                  <Maximize2 className="absolute inset-0 flex h-4 w-4 items-center justify-center text-white/90" />
-                )}
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-3 border-t border-border pt-3">
-            <button
-              type="button"
-              onClick={() => {
-                dispatch({ type: 'SET_BACKGROUND', payload: { type: 'solid', value: '#0a0a0a' } });
-                setIsOpen(false);
+      <DropdownPortal
+        ref={dropdownRef}
+        buttonRef={buttonRef}
+        isOpen={isOpen}
+        className="w-64 p-3"
+        role="listbox"
+        aria-label="Background presets"
+      >
+        <div className="mb-3 flex items-center gap-2">
+          <label className="text-muted-foreground flex cursor-pointer items-center gap-2 text-sm">
+            <input
+              type="color"
+              value={customColor}
+              onChange={(e) => {
+                setCustomColor(e.target.value);
+                dispatch({
+                  type: 'SET_BACKGROUND',
+                  payload: { type: 'solid', value: e.target.value },
+                });
               }}
-              className="text-muted-foreground flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-foreground"
-            >
-              <Minimize2 className="h-4 w-4" />
-              <span>Reset to default</span>
-            </button>
-          </div>
+              className="h-6 w-6 cursor-pointer rounded border border-border"
+              aria-label="Custom color"
+            />
+            <span>Custom</span>
+          </label>
+          <label className="text-muted-foreground flex cursor-pointer items-center gap-2 text-sm">
+            {/* eslint-disable-next-line jsx-a11y/alt-text */}
+            <Image className="h-4 w-4" />
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="sr-only"
+              aria-label="Upload background image"
+            />
+            <span>Image</span>
+          </label>
         </div>
-      )}
+
+        <div className="grid max-h-60 grid-cols-4 gap-1.5 overflow-y-auto">
+          {backgroundPresets.map((preset, index) => (
+            <button
+              key={index}
+              type="button"
+              onClick={() => handlePresetSelect(preset)}
+              role="option"
+              aria-selected={background.type === preset.type && background.value === preset.value}
+              className={cn(
+                'relative aspect-square rounded border-2 transition-all',
+                'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+                background.type === preset.type && background.value === preset.value
+                  ? 'scale-105 border-primary'
+                  : 'border-transparent hover:border-border'
+              )}
+              style={getBackgroundStyle(preset)}
+            >
+              {background.type === preset.type && background.value === preset.value && (
+                <Maximize2 className="absolute inset-0 flex h-4 w-4 items-center justify-center text-white/90" />
+              )}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-3 border-t border-border pt-3">
+          <button
+            type="button"
+            onClick={() => {
+              dispatch({ type: 'SET_BACKGROUND', payload: { type: 'solid', value: '#0a0a0a' } });
+              setIsOpen(false);
+            }}
+            className="text-muted-foreground flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-foreground"
+          >
+            <Minimize2 className="h-4 w-4" />
+            <span>Reset to default</span>
+          </button>
+        </div>
+      </DropdownPortal>
     </div>
   );
 }

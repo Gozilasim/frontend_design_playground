@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { ChevronRight, FolderOpen } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { ChevronRight } from 'lucide-react';
 import { DesignCategory } from '@/data';
 import { cn } from '@/lib/utils';
 
@@ -102,36 +102,95 @@ function DesignItem({
   onMouseEnter,
   onMouseLeave,
 }: DesignItemProps) {
+  const itemRef = useRef<HTMLButtonElement>(null);
+  const [selectionStyle, setSelectionStyle] = useState<React.CSSProperties>({});
+
+  useEffect(() => {
+    if (isSelected && itemRef.current) {
+      updateSelectionPosition();
+      window.addEventListener('resize', updateSelectionPosition);
+      window.addEventListener('scroll', updateSelectionPosition, true);
+    }
+    return () => {
+      window.removeEventListener('resize', updateSelectionPosition);
+      window.removeEventListener('scroll', updateSelectionPosition, true);
+    };
+  }, [isSelected]);
+
+  const updateSelectionPosition = () => {
+    const item = itemRef.current;
+    if (!item) return;
+
+    const rect = item.getBoundingClientRect();
+    const sidebarRect = item.closest('aside')?.getBoundingClientRect();
+
+    if (!sidebarRect) return;
+
+    const itemWidth = rect.width;
+    const sidebarWidth = sidebarRect.width;
+    const itemLeft = rect.left - sidebarRect.left;
+
+    let left = 0;
+    let width = itemWidth;
+
+    if (itemLeft < 0) {
+      left = 0;
+      width = itemWidth + itemLeft;
+    } else if (itemLeft + itemWidth > sidebarWidth) {
+      left = sidebarWidth - itemWidth;
+      width = itemWidth;
+    } else {
+      left = itemLeft;
+    }
+
+    setSelectionStyle({
+      left: `${left}px`,
+      width: `${width}px`,
+      top: `${rect.top - sidebarRect.top}px`,
+      height: `${rect.height}px`,
+    });
+  };
+
   return (
-    <button
-      type="button"
-      onClick={() => onSelect(design.id)}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      className={cn(
-        'flex w-full items-center gap-2 rounded-md px-3 py-1.5',
-        'text-muted-foreground text-sm',
-        'hover:bg-accent hover:text-foreground',
-        'transition-colors duration-150',
-        'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:ring-offset-background',
-        isSelected &&
-          'bg-accent font-medium text-foreground before:absolute before:left-0 before:top-1/2 before:h-6 before:w-1 before:-translate-y-1/2 before:bg-primary'
+    <>
+      {isSelected && (
+        <div
+          className="pointer-events-none fixed z-50 bg-primary/20 border border-primary/30 rounded-md shadow-lg shadow-primary/10 animate-scale-in"
+          style={selectionStyle}
+          aria-hidden="true"
+        />
       )}
-      style={{ position: 'relative' }}
-    >
-      <span className="flex-1 truncate">{design.title}</span>
-      {design.tags.length > 0 && (
-        <span
-          className={cn(
-            'flex-shrink-0 rounded px-1.5 py-0.5 text-xs',
-            'text-muted-foreground bg-muted',
-            'opacity-0 transition-opacity group-hover:opacity-100',
-            isSelected && 'bg-primary/20 text-primary opacity-100'
-          )}
-        >
-          {design.tags[0]}
-        </span>
-      )}
-    </button>
+      <button
+        ref={itemRef}
+        type="button"
+        onClick={() => onSelect(design.id)}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        className={cn(
+          'relative flex w-full items-center gap-2 rounded-md px-3 py-1.5',
+          'text-muted-foreground text-sm',
+          'hover:bg-accent hover:text-foreground',
+          'transition-colors duration-150',
+          'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:ring-offset-background',
+          isSelected && 'bg-accent font-medium text-foreground z-10',
+          isHovered && !isSelected && 'bg-accent/50'
+        )}
+      >
+        <span className="flex-1 truncate">{design.title}</span>
+        {design.tags.length > 0 && (
+          <span
+            className={cn(
+              'flex-shrink-0 rounded px-1.5 py-0.5 text-xs',
+              'text-muted-foreground bg-muted',
+              'opacity-0 transition-opacity',
+              (isHovered || isSelected) && 'opacity-100',
+              isSelected && 'bg-primary/20 text-primary'
+            )}
+          >
+            {design.tags[0]}
+          </span>
+        )}
+      </button>
+    </>
   );
 }
