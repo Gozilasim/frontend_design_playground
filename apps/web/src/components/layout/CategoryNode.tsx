@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { ChevronRight, FolderOpen } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { ChevronRight } from 'lucide-react';
 import { DesignCategory } from '@/data';
 import { cn } from '@/lib/utils';
+import { useSidebarRef } from '@/providers/SidebarContext';
 
 interface CategoryNodeProps {
   category: DesignCategory;
@@ -23,6 +24,7 @@ export function CategoryNode({
   onSelectDesign,
 }: CategoryNodeProps) {
   const [hoveredDesign, setHoveredDesign] = useState<string | null>(null);
+  const sidebarRef = useSidebarRef();
 
   const Icon = category.icon;
 
@@ -76,6 +78,7 @@ export function CategoryNode({
                 onSelect={onSelectDesign}
                 onMouseEnter={() => setHoveredDesign(design.id)}
                 onMouseLeave={() => setHoveredDesign(null)}
+                sidebarRef={sidebarRef}
               />
             </li>
           ))}
@@ -92,6 +95,7 @@ interface DesignItemProps {
   onSelect: (designId: string) => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
+  sidebarRef: React.RefObject<HTMLElement>;
 }
 
 function DesignItem({
@@ -101,37 +105,126 @@ function DesignItem({
   onSelect,
   onMouseEnter,
   onMouseLeave,
+  sidebarRef,
 }: DesignItemProps) {
+  const itemRef = useRef<HTMLButtonElement>(null);
+  const [indicatorRect, setIndicatorRect] = useState<DOMRect | null>(null);
+  const resizeObserverRef = useRef<ResizeObserver>();
+
+  const updatePosition = useCallback(() => {
+    const item = itemRef.current;
+    const sidebar = sidebarRef.current;
+    if (!item || !sidebar || !isSelected) return;
+
+    const itemRect = item.getBoundingClientRect();
+    const sidebarRect = sidebar.getBoundingClientRect();
+
+    // Account for sidebar padding (nav has p-3 = 12px)
+    const navPadding = 12;
+    const contentLeft = sidebarRect.left + navPadding;
+    const contentWidth = sidebarRect.width - navPadding * 2;
+
+    const itemLeft = itemRect.left - contentLeft;
+    const itemWidth = itemRect.width;
+
+    let left = Math.max(0, Math.min(itemLeft, contentWidth - itemWidth));
+    if (itemLeft < 0) {
+      left = 0;
+    } else if (itemLeft + itemWidth > contentWidth) {
+      left = contentWidth - itemWidth;
+    }
+
+    setIndicatorRect({
+      ...itemRect,
+      left: contentLeft + left,
+      top: itemRect.top,
+      width: itemWidth,
+      height: itemRect.height,
+    } as DOMRect);
+  }, [isSelected, sidebarRef]);
+
+  useEffect(() => {
+    if (!isSelected) {
+      setIndicatorRect(null);
+      return;
+    }
+
+    updatePosition();
+    
+    // Observe item size changes
+    if (itemRef.current) {
+      resizeObserverRef.current = new ResizeObserver(updatePosition);
+      resizeObserverRef.current.observe(itemRef.current);
+    }
+
+    // Update on scroll/resize
+    window.addEventListener('scroll', updatePosition, { passive: true });
+    window.addEventListener('resize', updatePosition);
+    
+    // Also listen for sidebar width changes
+    const sidebar = sidebarRef.current;
+    if (sidebar) {
+      const sidebarObserver = new ResizeObserver(updatePosition);
+      sidebarObserver.observe(sidebar);
+      return () => {
+        sidebarObserver.disconnect();
+      };
+    }
+  }, [isSelected, updatePosition, sidebarRef]);
+
+  useEffect(() => {
+    return () => {
+      resizeObserverRef.current?.disconnect();
+      window.removeEventListener('scroll', updatePosition);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [updatePosition]);
+
   return (
-    <button
-      type="button"
-      onClick={() => onSelect(design.id)}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      className={cn(
-        'flex w-full items-center gap-2 rounded-md px-3 py-1.5',
-        'text-muted-foreground text-sm',
-        'hover:bg-accent hover:text-foreground',
-        'transition-colors duration-150',
-        'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:ring-offset-background',
-        isSelected &&
-          'bg-accent font-medium text-foreground before:absolute before:left-0 before:top-1/2 before:h-6 before:w-1 before:-translate-y-1/2 before:bg-primary'
+    <>
+      {isSelected && indicatorRect && (
+        <div
+          className="pointer-events-none fixed z-[60] bg-primary/20 border border-primary/40 rounded-md shadow-xl shadow-primary/20 animate-scale-in transition-all duration-150 ease-out"
+          style={{
+            left: indicatorRect.left,
+            top: indicatorRect.top,
+            width: indicatorRect.width,
+            height: indicatorRect.height,
+          }}
+          aria-hidden="true"
+        />
       )}
-      style={{ position: 'relative' }}
-    >
-      <span className="flex-1 truncate">{design.title}</span>
-      {design.tags.length > 0 && (
-        <span
-          className={cn(
-            'flex-shrink-0 rounded px-1.5 py-0.5 text-xs',
-            'text-muted-foreground bg-muted',
-            'opacity-0 transition-opacity group-hover:opacity-100',
-            isSelected && 'bg-primary/20 text-primary opacity-100'
-          )}
-        >
-          {design.tags[0]}
-        </span>
-      )}
-    </button>
+      <button
+        ref={itemRef}
+        type="button"
+        onClick={() => onSelect(design.id)}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        className={cn(
+          'relative flex w-full items-center gap-2 rounded-md px-3 py-1.5',
+          'text-muted-foreground text-sm',
+          'hover:bg-accent hover:text-foreground',
+          'transition-colors duration-150',
+          'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:ring-offset-background',
+          isSelected && 'bg-accent font-medium text-foreground z-10 relative',
+          isHovered && !isSelected && 'bg-accent/50'
+        )}
+      >
+        <span className="flex-1 truncate">{design.title}</span>
+        {design.tags.length > 0 && (
+          <span
+            className={cn(
+              'flex-shrink-0 rounded px-1.5 py-0.5 text-xs',
+              'text-muted-foreground bg-muted',
+              'opacity-0 transition-opacity',
+              (isHovered || isSelected) && 'opacity-100',
+              isSelected && 'bg-primary/20 text-primary'
+            )}
+          >
+            {design.tags[0]}
+          </span>
+        )}
+      </button>
+    </>
   );
 }

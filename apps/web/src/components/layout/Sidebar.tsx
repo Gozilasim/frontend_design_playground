@@ -1,17 +1,19 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { ChevronLeft, X, Menu, Search } from 'lucide-react';
 import { getDesignsByCategory } from '@/data/designRegistry';
 import { getCategoriesSorted } from '@/data/categories';
 import { categories } from '@/data/categoryDefinitions';
 import { CategoryNode } from './CategoryNode';
 import { useDesignContext, useSidebar } from '@/providers/DesignProvider';
+import { SidebarProvider, useSidebarRef } from '@/providers/SidebarContext';
 import { cn } from '@/lib/utils';
 
-export function Sidebar() {
+function SidebarInner() {
   const { selectedDesignId, dispatch } = useDesignContext();
   const { open, toggle, set: setSidebarOpen } = useSidebar();
+  const sidebarRef = useSidebarRef();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
     auth: true,
@@ -64,6 +66,7 @@ export function Sidebar() {
 
   return (
     <aside
+      ref={sidebarRef}
       className={cn(
         'fixed left-0 top-0 z-40 h-screen border-r border-border bg-card',
         'flex flex-col transition-all duration-300 ease-in-out',
@@ -191,5 +194,13 @@ export function Sidebar() {
         </div>
       )}
     </aside>
+  );
+}
+
+export function Sidebar() {
+  return (
+    <SidebarProvider>
+      <SidebarInner />
+    </SidebarProvider>
   );
 }

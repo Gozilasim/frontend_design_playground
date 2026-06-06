@@ -1,29 +1,34 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type ComponentType } from 'react';
 import { Monitor, Smartphone, Tablet, RotateCcw } from 'lucide-react';
-import { viewportPresets, ViewportPreset } from '@/data/viewportPresets';
+import { viewportPresets, type ViewportPreset } from '@/data/viewportPresets';
 import { useDesignContext } from '@/providers/DesignProvider';
+import { DropdownPortal } from '@/components/ui/DropdownPortal';
 import { cn } from '@/lib/utils';
 
-const deviceTypeIcons = {
+const deviceTypeIcons: Record<
+  ViewportPreset['deviceType'],
+  ComponentType<{ className?: string }>
+> = {
   desktop: Monitor,
   mobile: Smartphone,
   tablet: Tablet,
   shorts: RotateCcw,
 };
 
-const deviceTypeLabels = {
+const deviceTypeLabels: Record<ViewportPreset['deviceType'], string> = {
   desktop: 'Desktop',
   mobile: 'Mobile',
   tablet: 'Tablet',
   shorts: 'Shorts',
 };
 
+const deviceTypeOrder: ViewportPreset['deviceType'][] = ['desktop', 'mobile', 'tablet', 'shorts'];
+
 export function DeviceSelector() {
   const { viewport, dispatch } = useDesignContext();
   const [isOpen, setIsOpen] = useState(false);
-  const [hoveredPreset, setHoveredPreset] = useState<ViewportPreset | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -47,19 +52,25 @@ export function DeviceSelector() {
     (p) => p.width === viewport.width && p.height === viewport.height
   );
 
-  const groupedPresets = viewportPresets.reduce(
+  const groupedPresets = viewportPresets.reduce<
+    Record<ViewportPreset['deviceType'], ViewportPreset[]>
+  >(
     (acc, preset) => {
-      if (!acc[preset.deviceType]) acc[preset.deviceType] = [];
       acc[preset.deviceType].push(preset);
       return acc;
     },
-    {} as Record<string, ViewportPreset[]>
+    {
+      desktop: [],
+      mobile: [],
+      tablet: [],
+      shorts: [],
+    }
   );
 
   const CurrentIcon = currentPreset ? deviceTypeIcons[currentPreset.deviceType] : null;
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div>
       <button
         ref={buttonRef}
         type="button"
@@ -85,16 +96,22 @@ export function DeviceSelector() {
         )}
       </button>
 
-      {isOpen && (
-        <div
-          className="absolute right-0 top-full z-50 mt-1.5 w-56 origin-top-right animate-scale-in rounded-lg border border-border bg-popover p-2 shadow-lg"
-          role="listbox"
-          aria-label="Viewport presets"
-        >
-          {Object.entries(groupedPresets).map(([deviceType, presets]) => (
+      <DropdownPortal
+        ref={dropdownRef}
+        buttonRef={buttonRef}
+        isOpen={isOpen}
+        className="w-56 p-2"
+        role="listbox"
+        aria-label="Viewport presets"
+      >
+        {deviceTypeOrder.map((deviceType) => {
+          const presets = groupedPresets[deviceType];
+          if (presets.length === 0) return null;
+
+          return (
             <div key={deviceType} className="py-1">
               <div className="text-muted-foreground px-2 py-1.5 text-xs font-semibold uppercase tracking-wider">
-                {deviceTypeLabels[deviceType as keyof typeof deviceTypeLabels]}
+                {deviceTypeLabels[deviceType]}
               </div>
               {presets.map((preset) => {
                 const PresetIcon = deviceTypeIcons[preset.deviceType];
@@ -106,8 +123,6 @@ export function DeviceSelector() {
                       dispatch({ type: 'SET_VIEWPORT', payload: preset });
                       setIsOpen(false);
                     }}
-                    onMouseEnter={() => setHoveredPreset(preset)}
-                    onMouseLeave={() => setHoveredPreset(null)}
                     role="option"
                     aria-selected={
                       viewport.width === preset.width && viewport.height === preset.height
@@ -131,9 +146,9 @@ export function DeviceSelector() {
                 );
               })}
             </div>
-          ))}
-        </div>
-      )}
+          );
+        })}
+      </DropdownPortal>
     </div>
   );
 }
