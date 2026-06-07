@@ -15,11 +15,11 @@ import { DesignCategory } from './categories';
 
 export const categories: DesignCategory[] = [
   {
-    id: 'auth',
-    label: 'Authentication',
+    id: 'login',
+    label: 'Login',
     icon: Lock,
     order: 1,
-    description: 'Login, register, password reset, and 2FA screens',
+    description: 'Various login page designs and styles',
   },
   {
     id: 'dashboard',
@@ -52,7 +52,7 @@ export const categories: DesignCategory[] = [
 ];
 
 export const categoryIcons = {
-  auth: Lock,
+  login: Lock,
   dashboard: LayoutDashboard,
   landing: Globe,
   chatbot: MessageSquare,
