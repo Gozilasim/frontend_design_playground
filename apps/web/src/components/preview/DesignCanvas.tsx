@@ -79,7 +79,7 @@ export function DesignCanvas() {
   const [retryKey, setRetryKey] = useState(0);
 
   const design = selectedDesignId ? getDesignById(selectedDesignId) : null;
-  const Component = design ? getDesignComponent(design.id) : null;
+  const Component = design ? design.component : null;
 
   const handleRetry = () => {
     setError(null);

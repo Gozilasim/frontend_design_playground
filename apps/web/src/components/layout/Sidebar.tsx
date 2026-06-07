@@ -16,7 +16,7 @@ function SidebarInner() {
   const sidebarRef = useSidebarRef();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
-    auth: true,
+    login: true,
   });
 
   useEffect(() => {
