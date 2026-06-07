@@ -86,6 +86,7 @@ This is a monorepo for a UI Design Gallery / Playground application. The primary
 - Designs must be responsive across all 6 viewport presets
 - No external API calls or side effects in design components
 - Animations respect `prefers-reduced-motion`
+- Each design component (e.g. sidebars, forms) must be completely isolated and self-contained. Do not share or reuse sub-components between different design implementations.
 
 ## Development Workflow
 

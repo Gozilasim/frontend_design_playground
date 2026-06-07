@@ -5,3 +5,4 @@ export * from './ZoomControl';
 export * from './FullscreenToggle';
 export * from './DesignCanvas';
 export * from './ShortcutsHelp';
+export * from './CopyPromptButton';

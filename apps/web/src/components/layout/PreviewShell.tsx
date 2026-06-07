@@ -8,6 +8,7 @@ import { ZoomControl } from '../preview/ZoomControl';
 import { FullscreenToggle } from '../preview/FullscreenToggle';
 import { DesignCanvas } from '../preview/DesignCanvas';
 import { ShortcutsHelp } from '../preview/ShortcutsHelp';
+import { CopyPromptButton } from '../preview/CopyPromptButton';
 import { cn } from '@/lib/utils';
 
 export function PreviewShell() {
@@ -30,6 +31,8 @@ export function PreviewShell() {
             <BackgroundControl />
           </div>
           <div className="flex items-center gap-2">
+            <CopyPromptButton />
+            <div className="h-5 w-px bg-border" />
             <FullscreenToggle />
           </div>
         </header>
