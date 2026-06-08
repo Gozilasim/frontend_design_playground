@@ -31,6 +31,8 @@ export default function NginxBlueGreen({ viewport }: DesignProps) {
   const [logs, setLogs] = useState<string[]>([]);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [reloadCommandPulse, setReloadCommandPulse] = useState<boolean>(false);
+  const [reloadBurst, setReloadBurst] = useState<boolean>(false);
+  const [whiteFlash, setWhiteFlash] = useState<boolean>(false);
   // Track ticks during Step 1 to drain green logs after first few ticks
   const [step1Ticks, setStep1Ticks] = useState<number>(0);
 
@@ -148,17 +150,21 @@ export default function NginxBlueGreen({ viewport }: DesignProps) {
         if (current === 0) {
           setIsReloading(true);
           setReloadCommandPulse(true);
+          setReloadBurst(true);
+          setWhiteFlash(true);
           setStep1Ticks(0);
           playSound('reload');
           setTimeout(() => {
             setIsReloading(false);
             setReloadCommandPulse(false);
-          }, 1200);
+            setReloadBurst(false);
+          }, 1500);
+          setTimeout(() => setWhiteFlash(false), 50);
           return 1;
         } else if (current === 1) {
           setShowSuccess(true);
           playSound('success');
-          setTimeout(() => setShowSuccess(false), 2500);
+          setTimeout(() => setShowSuccess(false), 3000);
           return 2;
         } else {
           return 0;
@@ -179,16 +185,20 @@ export default function NginxBlueGreen({ viewport }: DesignProps) {
     if (step === 1) {
       setIsReloading(true);
       setReloadCommandPulse(true);
+      setReloadBurst(true);
+      setWhiteFlash(true);
       setStep1Ticks(0);
       playSound('reload');
       setTimeout(() => {
         setIsReloading(false);
         setReloadCommandPulse(false);
-      }, 1200);
+        setReloadBurst(false);
+      }, 1500);
+      setTimeout(() => setWhiteFlash(false), 50);
     } else if (step === 2) {
       setShowSuccess(true);
       playSound('success');
-      setTimeout(() => setShowSuccess(false), 2500);
+      setTimeout(() => setShowSuccess(false), 3000);
     }
     setActiveStep(step);
   };
@@ -197,6 +207,8 @@ export default function NginxBlueGreen({ viewport }: DesignProps) {
     playSound('click');
     setActiveStep(0);
     setStep1Ticks(0);
+    setReloadBurst(false);
+    setWhiteFlash(false);
     setIsPlaying(true);
   };
 
@@ -236,6 +248,23 @@ export default function NginxBlueGreen({ viewport }: DesignProps) {
       {/* Background glow effects */}
       <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-emerald-500/5 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-blue-500/5 blur-[140px] pointer-events-none" />
+
+      {/* White flash overlay on reload */}
+      {whiteFlash && (
+        <div
+          className="absolute inset-0 bg-white/15 pointer-events-none z-40"
+          style={{
+            animation: 'flash 50ms ease-out forwards',
+          }}
+        />
+      )}
+      <style jsx>{`
+        @keyframes flash {
+          0% { opacity: 0; }
+          50% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+      `}</style>
 
       {/* Main centered container */}
       <div className="w-full max-w-4xl flex flex-col justify-center flex-grow">
@@ -498,12 +527,11 @@ export default function NginxBlueGreen({ viewport }: DesignProps) {
                 d="M 530 150 C 610 150, 650 82, 740 82"
                 fill="none"
                 className="transition-all duration-700"
-                stroke={
-                  activeStep === 0
-                    ? 'url(#gradient-green)'
-                    : 'url(#gradient-grey)'
+                stroke={activeStep === 0 ? 'url(#gradient-green)' : 'url(#gradient-grey)'}
+                strokeWidth={
+                  activeStep === 0 ? '2.5' : activeStep === 1 ? '0.8' : '0.5'
                 }
-                strokeWidth={activeStep === 0 ? '2.5' : '1'}
+                strokeOpacity={activeStep === 0 ? 1 : activeStep === 1 ? 0.25 : 0.15}
               />
 
               {/* Nginx to Blue Path */}
@@ -512,14 +540,11 @@ export default function NginxBlueGreen({ viewport }: DesignProps) {
                 d="M 530 150 C 610 150, 650 217, 740 217"
                 fill="none"
                 className="transition-all duration-700"
-                stroke={
-                  activeStep === 2 || activeStep === 1
-                    ? 'url(#gradient-blue)'
-                    : 'url(#gradient-grey)'
-                }
+                stroke={activeStep >= 1 ? 'url(#gradient-blue)' : 'url(#gradient-grey)'}
                 strokeWidth={
-                  activeStep === 2 ? '2.5' : activeStep === 1 ? '2' : '1'
+                  activeStep === 2 ? '2.5' : activeStep === 1 ? '2.2' : '0.5'
                 }
+                strokeOpacity={activeStep === 2 ? 1 : activeStep === 1 ? 0.85 : 0.15}
               />
             </>
           )}
@@ -556,12 +581,11 @@ export default function NginxBlueGreen({ viewport }: DesignProps) {
                 d="M 180 215 C 180 235, 90 235, 90 255"
                 fill="none"
                 className="transition-all duration-700"
-                stroke={
-                  activeStep === 0
-                    ? 'url(#gradient-green)'
-                    : 'url(#gradient-grey)'
+                stroke={activeStep === 0 ? 'url(#gradient-green)' : 'url(#gradient-grey)'}
+                strokeWidth={
+                  activeStep === 0 ? '2.5' : activeStep === 1 ? '0.8' : '0.5'
                 }
-                strokeWidth={activeStep === 0 ? '2.5' : '1'}
+                strokeOpacity={activeStep === 0 ? 1 : activeStep === 1 ? 0.25 : 0.15}
               />
 
               {/* Nginx to Blue Path */}
@@ -570,14 +594,11 @@ export default function NginxBlueGreen({ viewport }: DesignProps) {
                 d="M 180 215 C 180 235, 270 235, 270 255"
                 fill="none"
                 className="transition-all duration-700"
-                stroke={
-                  activeStep === 2 || activeStep === 1
-                    ? 'url(#gradient-blue)'
-                    : 'url(#gradient-grey)'
-                }
+                stroke={activeStep >= 1 ? 'url(#gradient-blue)' : 'url(#gradient-grey)'}
                 strokeWidth={
-                  activeStep === 2 ? '2.5' : activeStep === 1 ? '2' : '1'
+                  activeStep === 2 ? '2.5' : activeStep === 1 ? '2.2' : '0.5'
                 }
+                strokeOpacity={activeStep === 2 ? 1 : activeStep === 1 ? 0.85 : 0.15}
               />
             </>
           )}
@@ -659,62 +680,209 @@ export default function NginxBlueGreen({ viewport }: DesignProps) {
                 ))}
 
               {/* Fix 3: Step 1 Reload — ALL new traffic goes to Blue */}
-              {activeStep === 1 &&
-                particles.slice(0, 6).map((p) => (
-                  <circle
-                    key={`new-blue-${p.id}`}
-                    r="3"
-                    fill="#3b82f6"
-                    className="filter drop-shadow-[0_0_5px_#3b82f6]"
-                  >
-                    <animateMotion
-                      dur="1.5s"
-                      repeatCount="indefinite"
-                      path={
-                        isVertical
-                          ? 'M 180 215 C 180 235, 270 235, 270 255'
-                          : 'M 530 150 C 610 150, 650 217, 740 217'
-                      }
-                      begin={`${p.delay * 0.55}s`}
-                    />
-                  </circle>
-                ))}
+              {activeStep === 1 && (
+                <>
+                  {/* Blue burst particles — first 3 burst from Nginx node with stagger */}
+                  {particles.slice(0, 3).map((p, idx) => (
+                    <circle
+                      key={`blue-burst-${p.id}`}
+                      r="3.5"
+                      fill="#3b82f6"
+                      className="filter drop-shadow-[0_0_6px_#3b82f6]"
+                    >
+                      <animateMotion
+                        dur="1.4s"
+                        repeatCount="indefinite"
+                        path={
+                          isVertical
+                            ? 'M 180 215 C 180 235, 270 235, 270 255'
+                            : 'M 530 150 C 610 150, 650 217, 740 217'
+                        }
+                        begin={`${idx * 0.12}s`}
+                      />
+                      <animate
+                        attributeName="r"
+                        from="4"
+                        to="3"
+                        dur="0.5s"
+                        begin={`${idx * 0.12}s`}
+                        fill="freeze"
+                      />
+                      <animate
+                        attributeName="opacity"
+                        from="1"
+                        to="0.8"
+                        dur="0.5s"
+                        begin={`${idx * 0.12}s`}
+                        fill="freeze"
+                      />
+                    </circle>
+                  ))}
+                  {/* Remaining blue particles — normal continuous flow */}
+                  {particles.slice(3, 6).map((p) => (
+                    <circle
+                      key={`new-blue-${p.id}`}
+                      r="3"
+                      fill="#3b82f6"
+                      className="filter drop-shadow-[0_0_5px_#3b82f6]"
+                    >
+                      <animateMotion
+                        dur="1.5s"
+                        repeatCount="indefinite"
+                        path={
+                          isVertical
+                            ? 'M 180 215 C 180 235, 270 235, 270 255'
+                            : 'M 530 150 C 610 150, 650 217, 740 217'
+                        }
+                        begin={`${p.delay * 0.55}s`}
+                      />
+                    </circle>
+                  ))}
+                </>
+              )}
 
-              {/* Fix 3: Step 1 — 1-2 fading green drain particles (NOT looping) */}
+              {/* Fix 3: Step 1 — Enhanced green drain particles (NOT looping) */}
               {activeStep === 1 &&
-                particles.slice(0, 2).map((p) => (
-                  <circle
-                    key={`drain-${p.id}`}
-                    r="2"
-                    fill="#10b981"
-                    opacity="0.5"
-                    className="filter drop-shadow-[0_0_3px_#10b981]"
-                  >
-                    <animateMotion
-                      dur="3s"
-                      repeatCount="1"
-                      fill="freeze"
-                      path={
+                particles.slice(0, 5).map((p, idx) => (
+                  <g key={`drain-${p.id}`}>
+                    {/* Trailing path indicator */}
+                    <path
+                      d={
                         isVertical
                           ? 'M 180 215 C 180 235, 90 235, 90 255'
                           : 'M 530 150 C 610 150, 650 82, 740 82'
                       }
-                      begin={`${p.delay * 0.3}s`}
+                      fill="none"
+                      stroke="#10b981"
+                      strokeWidth="1"
+                      strokeDasharray="4,6"
+                      opacity="0.3"
+                    >
+                      <animate
+                        attributeName="strokeDashoffset"
+                        from="0"
+                        to="-40"
+                        dur="2s"
+                        begin={`${p.delay * 0.25}s`}
+                        fill="freeze"
+                      />
+                      <animate
+                        attributeName="opacity"
+                        from="0.3"
+                        to="0"
+                        dur="2s"
+                        begin={`${p.delay * 0.25}s`}
+                        fill="freeze"
+                      />
+                    </path>
+                    {/* Drain particle with size shrink */}
+                    <circle
+                      r="3"
+                      fill="#10b981"
+                      opacity="1"
+                      className="filter drop-shadow-[0_0_4px_#10b981]"
+                    >
+                      <animateMotion
+                        dur="2s"
+                        repeatCount="1"
+                        fill="freeze"
+                        path={
+                          isVertical
+                            ? 'M 180 215 C 180 235, 90 235, 90 255'
+                            : 'M 530 150 C 610 150, 650 82, 740 82'
+                        }
+                        begin={`${p.delay * 0.25}s`}
+                      />
+                      <animate
+                        attributeName="opacity"
+                        from="1"
+                        to="0"
+                        dur="2s"
+                        begin={`${p.delay * 0.25}s`}
+                        fill="freeze"
+                      />
+                      <animate
+                        attributeName="r"
+                        from="3"
+                        to="0.5"
+                        dur="2s"
+                        begin={`${p.delay * 0.25}s`}
+                        fill="freeze"
+                      />
+                    </circle>
+                  </g>
+                ))}
+            
+            {/* Reload burst particles from Nginx node */}
+            {reloadBurst && (
+              <g>
+                {/* Expanding ring */}
+                <circle
+                  cx={isVertical ? 180 : 530}
+                  cy={isVertical ? 215 : 150}
+                  r="5"
+                  stroke="#fbbf24"
+                  strokeWidth="2.5"
+                  fill="none"
+                  opacity="0.9"
+                >
+                  <animate
+                    attributeName="r"
+                    from="5"
+                    to="50"
+                    dur="0.7s"
+                    fill="freeze"
+                  />
+                  <animate
+                    attributeName="opacity"
+                    from="0.9"
+                    to="0"
+                    dur="0.7s"
+                    fill="freeze"
+                  />
+                  <animate
+                    attributeName="strokeWidth"
+                    from="2.5"
+                    to="0.5"
+                    dur="0.7s"
+                    fill="freeze"
+                  />
+                </circle>
+                {/* Radial burst particles */}
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <circle key={`burst-${i}`} r="2.5" fill="#fbbf24" opacity="0.9">
+                    <animateMotion
+                      path={
+                        isVertical
+                          ? `M 180 215 L ${180 + 55 * Math.cos((i * 36) * Math.PI / 180)} ${215 + 55 * Math.sin((i * 36) * Math.PI / 180)}`
+                          : `M 530 150 L ${530 + 55 * Math.cos((i * 36) * Math.PI / 180)} ${150 + 55 * Math.sin((i * 36) * Math.PI / 180)}`
+                      }
+                      dur="0.6s"
+                      fill="freeze"
                     />
                     <animate
                       attributeName="opacity"
-                      from="0.5"
+                      from="0.9"
                       to="0"
-                      dur="3s"
-                      begin={`${p.delay * 0.3}s`}
+                      dur="0.6s"
+                      fill="freeze"
+                    />
+                    <animate
+                      attributeName="r"
+                      from="2.5"
+                      to="0.5"
+                      dur="0.6s"
                       fill="freeze"
                     />
                   </circle>
                 ))}
+              </g>
+            )}
+
             </>
           )}
-
-          {/* HTML cards embedded directly into SVG via foreignObject */}
+          
+            {/* HTML cards embedded directly into SVG via foreignObject */}
 
           {/* 1. Client Card List */}
           {!isVertical ? (
@@ -747,6 +915,25 @@ export default function NginxBlueGreen({ viewport }: DesignProps) {
                     </span>
                   </div>
                 ))}
+              </div>
+            </foreignObject>
+          )}
+
+          {/* Success banner above NGINX — tall slot + bottom align keeps bounce inside bounds */}
+          {showSuccess && (
+            <foreignObject
+              x={isVertical ? 10 : 250}
+              y={isVertical ? 68 : 38}
+              width={isVertical ? 340 : 420}
+              height={isVertical ? 58 : 68}
+            >
+              <div className="flex h-full w-full flex-col justify-end">
+                <div className="flex w-full animate-bounce items-center gap-1.5 rounded-xl border border-blue-400 bg-blue-600/95 px-2.5 py-1.5 font-sans text-white shadow-[0_0_16px_rgba(59,130,246,0.3)] backdrop-blur-md">
+                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-sky-300" />
+                  <span className="text-[8.5px] font-semibold leading-tight">
+                    All new traffic now routes to Blue. Green draining complete.
+                  </span>
+                </div>
               </div>
             </foreignObject>
           )}
@@ -892,15 +1079,6 @@ export default function NginxBlueGreen({ viewport }: DesignProps) {
         </svg>
       </div>
     </div>
-    {/* Success Reload Banner notification overlay (Moved to top of viewport with premium styling) */}
-    {showSuccess && (
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-blue-600/95 border border-blue-400 text-white font-sans text-xs font-semibold px-4 py-2 rounded-xl flex items-center gap-2 shadow-[0_0_25px_rgba(59,130,246,0.35)] backdrop-blur-md z-50 animate-bounce">
-        <CheckCircle2 className="h-4 w-4 text-sky-300 flex-shrink-0" />
-        <span>
-          All new traffic now routes to Blue. Green draining complete.
-        </span>
-      </div>
-    )}
   </div>
 );
 }
