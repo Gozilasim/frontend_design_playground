@@ -1,6 +1,7 @@
 import { ViewportPreset } from './viewportPresets';
 import { LoginPeekingCharacter } from '@/designs/login';
-import { LampToggle } from '@/designs/components';
+import { LampToggle, OTPVerificationModal } from '@/designs/components';
+import { NginxBlueGreen } from '@/designs/dashboard';
 
 export interface BackgroundConfig {
   type: 'solid' | 'gradient' | 'image' | 'grid';
@@ -27,6 +28,21 @@ export interface DesignEntry {
 }
 
 export const designRegistry: DesignEntry[] = [
+  {
+    id: 'nginx-blue-green',
+    categoryId: 'dashboard',
+    title: 'Nginx Blue-Green Deployment',
+    description: 'An interactive visualization of zero-downtime Nginx Blue-Green deployment with dynamic routing and live explanation tabs.',
+    component: NginxBlueGreen,
+    tags: ['nginx', 'devops', 'deployment', 'interactive', 'animation', 'glassmorphism'],
+    recommendedViewport: { width: 1440, height: 900, label: 'Desktop 1440×900', deviceType: 'desktop' },
+    prompt: `Create an interactive Nginx Blue-Green Deployment visualizer using React and Tailwind CSS.
+The visualizer must show traffic (simulated as glowing particle dots) flowing from clients to Nginx, and from Nginx to either the active Green Server (v1.0.0) or Blue Server (v2.0.0).
+Include a central Nginx dashboard card with two tabs:
+1. nginx.conf: displaying the dynamic upstream routing code.
+2. Animation Explanation: detailing the step-by-step logic of the current deployment state.
+Include manual controls to trigger the switch, reload Nginx, or step through the process.`
+  },
   {
     id: 'peeking-character-login',
     categoryId: 'login',
@@ -969,7 +985,76 @@ Internal dependencies from shadcn:
 Steps to integrate:
  0. Copy paste all the code above in the correct directories
  1. Install external dependencies
- 2. Ensure @/lib/utils has the cn helper (standard shadcn setup)\``,
+ 2. Ensure @/lib/utils has the cn helper (standard shadcn setup)\`\``,
+  },
+  {
+    id: 'otp-verification-modal',
+    categoryId: 'components',
+    title: 'OTP Verification Modal',
+    description: 'An animated glassmorphic OTP verification modal with merging inputs, 60s resend timer, 5-second loading countdown, and success confetti celebration.',
+    component: OTPVerificationModal,
+    tags: ['animated', 'interactive', 'modal', 'security', 'particle', 'glassmorphism'],
+    recommendedViewport: { width: 375, height: 667, label: 'Mobile 375\u00d7667', deviceType: 'mobile' },
+    prompt: `You are given a task to integrate an existing React component in the codebase
+
+The codebase should support:
+- shadcn project structure  
+- Tailwind CSS
+- Typescript
+
+If it doesn't, provide instructions on how to setup project via shadcn CLI, install Tailwind or Typescript.
+
+Determine the default path for components and styles.
+Copy-paste this component to /components/ui folder:
+
+\\\`\\\`\\\`tsx
+// otp-modal.tsx
+"use client";
+
+import React, { useState, useRef, useCallback, useEffect } from "react";
+import { cn } from "@/lib/utils";
+
+type OTPStatus = "typing" | "merging" | "verifying" | "success";
+const MERGE_DURATION = 600;
+const VERIFY_DURATION = 5000;
+
+interface OTPModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+// Full OTP Modal component with glassmorphic merging animation,
+// 60-second animated resend timer, 5-second verification timer,
+// confetti canvas particles, and keyboard auto-focus navigation.
+// See the full source code at OTPModal.tsx.
+\\\`\\\`\\\`
+
+Now create a demo page:
+
+\\\`\\\`\\\`tsx
+// demo.tsx
+import { useState } from "react";
+import OTPModal from "@/components/ui/otp-modal";
+
+export default function OTPDemoPage() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="flex h-screen items-center justify-center bg-[#070B14]">
+      <button onClick={() => setOpen(true)} className="rounded-xl bg-violet-600 px-6 py-3 text-white font-semibold hover:bg-violet-500 transition-colors">
+        Open OTP Modal
+      </button>
+      <OTPModal isOpen={open} onClose={() => setOpen(false)} />
+    </div>
+  );
+}
+\\\`\\\`\\\`
+
+IMPORTANT:
+External NPM dependencies: none
+Internal dependencies: @/lib/utils (cn helper)
+Steps to integrate:
+ 0. Copy paste all the code above in the correct directories
+ 1. Ensure @/lib/utils has the cn helper (standard shadcn setup)`,
   },
 ];
 
