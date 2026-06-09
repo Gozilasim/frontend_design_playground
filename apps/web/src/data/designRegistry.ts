@@ -1,7 +1,7 @@
 import { ViewportPreset } from './viewportPresets';
 import { LoginPeekingCharacter } from '@/designs/login';
 import { LampToggle, OTPVerificationModal } from '@/designs/components';
-import { NginxBlueGreen } from '@/designs/dashboard';
+import { NginxBlueGreen, CorsAllowedOrigins } from '@/designs/dashboard';
 
 export interface BackgroundConfig {
   type: 'solid' | 'gradient' | 'image' | 'grid';
@@ -42,6 +42,21 @@ Include a central Nginx dashboard card with two tabs:
 1. nginx.conf: displaying the dynamic upstream routing code.
 2. Animation Explanation: detailing the step-by-step logic of the current deployment state.
 Include manual controls to trigger the switch, reload Nginx, or step through the process.`
+  },
+  {
+    id: 'cors-allowed-origins',
+    categoryId: 'dashboard',
+    title: 'CORS Allowed Origins',
+    description: 'An interactive visualization of cross-origin resource sharing with animated request flow, guard scanning, and origin filtering.',
+    component: CorsAllowedOrigins,
+    tags: ['cors', 'security', 'network', 'interactive', 'animation', 'glassmorphism'],
+    recommendedViewport: { width: 1440, height: 900, label: 'Desktop 1440×900', deviceType: 'desktop' },
+    prompt: `Create an interactive CORS Allowed Origins visualizer using React and Tailwind CSS.
+The visualizer must show animated request particles flowing from Browser to Guard to Server.
+Include three phases: Rejected (origin blocked), Preflight (OPTIONS check), Allowed (full access).
+Add a Guard node with scanning animation and pulse rings for visual feedback.
+Include toggle controls to enable/disable allowed origins and see real-time results.
+Use a dark theme optimized for screen recording.`
   },
   {
     id: 'peeking-character-login',
