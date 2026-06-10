@@ -338,19 +338,16 @@ export default function OTPModal({ isOpen, onClose }: OTPModalProps) {
       <div
         className={cn(
           'relative z-10 w-full max-w-[420px] overflow-hidden rounded-3xl',
-          'border border-white/10 bg-slate-900/90 backdrop-blur-xl shadow-2xl',
+          'border border-white/10 bg-slate-900/90 shadow-2xl backdrop-blur-xl',
           'transition-all duration-500 ease-out',
           isClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
         )}
       >
         {/* Confetti canvas layer */}
-        <canvas
-          ref={canvasRef}
-          className="pointer-events-none absolute inset-0 z-30"
-        />
+        <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 z-30" />
 
         {/* Ambient glow orbs */}
-        <div className="pointer-events-none absolute -top-20 -left-20 h-40 w-40 rounded-full bg-violet-500/20 blur-[80px]" />
+        <div className="pointer-events-none absolute -left-20 -top-20 h-40 w-40 rounded-full bg-violet-500/20 blur-[80px]" />
         <div className="pointer-events-none absolute -bottom-20 -right-20 h-40 w-40 rounded-full bg-emerald-500/15 blur-[80px]" />
 
         {/* Close button */}
@@ -416,12 +413,7 @@ export default function OTPModal({ isOpen, onClose }: OTPModalProps) {
                     strokeLinejoin="round"
                     fill="rgba(167, 139, 250, 0.1)"
                   />
-                  <path
-                    d="M12 8V13"
-                    stroke="#A78BFA"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
+                  <path d="M12 8V13" stroke="#A78BFA" strokeWidth="1.5" strokeLinecap="round" />
                   <circle cx="12" cy="16" r="1" fill="#A78BFA" />
                 </svg>
               )}
@@ -461,26 +453,27 @@ export default function OTPModal({ isOpen, onClose }: OTPModalProps) {
             {status === 'verifying' ? (
               <div
                 className={cn(
-                  'mx-auto h-16 w-[224px] overflow-hidden rounded-2xl border bg-slate-950/70 relative flex items-center justify-center',
+                  'relative mx-auto flex h-16 w-[224px] items-center justify-center overflow-hidden rounded-2xl border bg-slate-950/70',
                   'transition-all duration-500 ease-out',
                   'animate-[pulseGlow_1.5s_infinite_alternate]'
                 )}
                 style={{
-                  boxShadow: '0 0 20px rgba(167, 139, 250, 0.15), inset 0 0 15px rgba(167, 139, 250, 0.05)',
+                  boxShadow:
+                    '0 0 20px rgba(167, 139, 250, 0.15), inset 0 0 15px rgba(167, 139, 250, 0.05)',
                   borderColor: 'rgba(167, 139, 250, 0.25)',
                 }}
               >
                 {/* Progress bar inside the capsule */}
                 <div
-                  className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-violet-600/30 to-indigo-500/40 border-r border-violet-500/50 transition-all duration-300"
+                  className="absolute bottom-0 left-0 top-0 border-r border-violet-500/50 bg-gradient-to-r from-violet-600/30 to-indigo-500/40 transition-all duration-300"
                   style={{
                     width: `${progress}%`,
                   }}
                 />
-                
+
                 {/* Scanner/charging line leading the progress */}
                 <div
-                  className="absolute top-0 bottom-0 w-0.5 bg-violet-400 shadow-[0_0_12px_#A78BFA] transition-all duration-300"
+                  className="absolute bottom-0 top-0 w-0.5 bg-violet-400 shadow-[0_0_12px_#A78BFA] transition-all duration-300"
                   style={{
                     left: `${progress}%`,
                     opacity: progress > 0 && progress < 100 ? 1 : 0,
@@ -488,9 +481,11 @@ export default function OTPModal({ isOpen, onClose }: OTPModalProps) {
                 />
 
                 {/* The digits centered with elegant spacing */}
-                <div className="relative z-10 flex items-center justify-center gap-7 text-2xl font-bold text-white tracking-wider">
+                <div className="relative z-10 flex items-center justify-center gap-7 text-2xl font-bold tracking-wider text-white">
                   {otp.map((digit, index) => (
-                    <span key={index} className="w-6 text-center select-none">{digit}</span>
+                    <span key={index} className="w-6 select-none text-center">
+                      {digit}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -527,7 +522,7 @@ export default function OTPModal({ isOpen, onClose }: OTPModalProps) {
                         'border bg-white/5 text-white outline-none',
                         'transition-all ease-in-out',
                         'placeholder:text-slate-600',
-                        'focus:border-violet-500/60 focus:bg-white/8 focus:ring-2 focus:ring-violet-500/20',
+                        'focus:bg-white/8 focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/20',
                         'disabled:cursor-default disabled:opacity-80',
                         // Dynamic border-radius for merge effect
                         isMerged
@@ -557,10 +552,7 @@ export default function OTPModal({ isOpen, onClose }: OTPModalProps) {
             {/* Orbiting dots around capsule during verification */}
             {status === 'verifying' && (
               <div className="pointer-events-none absolute inset-0 flex items-start justify-center">
-                <div
-                  className="relative mt-8 h-16 w-[232px]"
-                  style={{ perspective: '200px' }}
-                >
+                <div className="relative mt-8 h-16 w-[232px]" style={{ perspective: '200px' }}>
                   {[0, 1, 2].map((dotIndex) => (
                     <div
                       key={dotIndex}
@@ -588,12 +580,7 @@ export default function OTPModal({ isOpen, onClose }: OTPModalProps) {
                     'animate-[successPop_0.6s_cubic-bezier(0.175,0.885,0.32,1.275)_forwards]'
                   )}
                 >
-                  <svg
-                    width="40"
-                    height="40"
-                    viewBox="0 0 40 40"
-                    fill="none"
-                  >
+                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
                     <circle
                       cx="20"
                       cy="20"
@@ -704,9 +691,7 @@ export default function OTPModal({ isOpen, onClose }: OTPModalProps) {
                     strokeLinecap="round"
                   />
                 </svg>
-                <span>
-                  {status === 'merging' ? 'Preparing...' : 'Verifying identity...'}
-                </span>
+                <span>{status === 'merging' ? 'Preparing...' : 'Verifying identity...'}</span>
               </div>
             )}
           </div>
@@ -747,11 +732,15 @@ export default function OTPModal({ isOpen, onClose }: OTPModalProps) {
           }
           @keyframes pulseGlow {
             0% {
-              box-shadow: 0 0 12px rgba(167, 139, 250, 0.1), inset 0 0 10px rgba(167, 139, 250, 0.05);
+              box-shadow:
+                0 0 12px rgba(167, 139, 250, 0.1),
+                inset 0 0 10px rgba(167, 139, 250, 0.05);
               border-color: rgba(167, 139, 250, 0.2);
             }
             100% {
-              box-shadow: 0 0 24px rgba(167, 139, 250, 0.3), inset 0 0 18px rgba(167, 139, 250, 0.15);
+              box-shadow:
+                0 0 24px rgba(167, 139, 250, 0.3),
+                inset 0 0 18px rgba(167, 139, 250, 0.15);
               border-color: rgba(167, 139, 250, 0.55);
             }
           }

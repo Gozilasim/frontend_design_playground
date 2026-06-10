@@ -10,11 +10,7 @@ const SidebarContext = createContext<SidebarContextType | null>(null);
 
 export function SidebarProvider({ children }: { children: ReactNode }) {
   const sidebarRef = useRef<HTMLElement>(null);
-  return (
-    <SidebarContext.Provider value={{ sidebarRef }}>
-      {children}
-    </SidebarContext.Provider>
-  );
+  return <SidebarContext.Provider value={{ sidebarRef }}>{children}</SidebarContext.Provider>;
 }
 
 export function useSidebarRef(): React.RefObject<HTMLElement> {

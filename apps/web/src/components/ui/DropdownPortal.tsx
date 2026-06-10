@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  forwardRef,
-  type ComponentPropsWithoutRef,
-  type RefObject,
-} from 'react';
+import { forwardRef, type ComponentPropsWithoutRef, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { useDropdownPosition } from '@/hooks/useDropdownPosition';
 import { cn } from '@/lib/utils';

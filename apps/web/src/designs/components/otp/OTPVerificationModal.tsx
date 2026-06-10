@@ -11,15 +11,15 @@ export default function OTPVerificationModal({ isFullscreen }: DesignProps) {
   return (
     <div
       className={cn(
-        'flex h-full w-full items-center justify-center overflow-hidden relative select-none',
-        'transition-colors duration-700 ease-in-out bg-[#070B14]'
+        'relative flex h-full w-full select-none items-center justify-center overflow-hidden',
+        'bg-[#070B14] transition-colors duration-700 ease-in-out'
       )}
     >
       {/* Background ambient glow */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-1/4 left-1/3 h-80 w-80 rounded-full bg-violet-600/8 blur-[120px]" />
-        <div className="absolute bottom-1/4 right-1/3 h-64 w-64 rounded-full bg-indigo-600/6 blur-[100px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-slate-500/3 blur-[140px]" />
+        <div className="bg-violet-600/8 absolute left-1/3 top-1/4 h-80 w-80 rounded-full blur-[120px]" />
+        <div className="bg-indigo-600/6 absolute bottom-1/4 right-1/3 h-64 w-64 rounded-full blur-[100px]" />
+        <div className="bg-slate-500/3 absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full blur-[140px]" />
       </div>
 
       {/* Subtle grid pattern */}
@@ -64,12 +64,8 @@ export default function OTPVerificationModal({ isFullscreen }: DesignProps) {
               </svg>
             </div>
             <div>
-              <h2 className="text-lg font-bold tracking-tight text-white">
-                Security Center
-              </h2>
-              <p className="mt-0.5 text-sm text-slate-400">
-                Manage your account protection
-              </p>
+              <h2 className="text-lg font-bold tracking-tight text-white">Security Center</h2>
+              <p className="mt-0.5 text-sm text-slate-400">Manage your account protection</p>
             </div>
           </div>
 
@@ -79,12 +75,7 @@ export default function OTPVerificationModal({ isFullscreen }: DesignProps) {
             <div className="flex items-center justify-between rounded-xl bg-white/[0.03] px-4 py-3">
               <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10">
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                     <rect
                       x="5"
                       y="11"
@@ -111,24 +102,14 @@ export default function OTPVerificationModal({ isFullscreen }: DesignProps) {
             <div className="flex items-center justify-between rounded-xl bg-white/[0.03] px-4 py-3">
               <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10">
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M12 2L4 6V12C4 16.42 7.4 20.56 12 22C16.6 20.56 20 16.42 20 12V6L12 2Z"
                       stroke="#F59E0B"
                       strokeWidth="1.5"
                       strokeLinejoin="round"
                     />
-                    <path
-                      d="M12 8V13"
-                      stroke="#F59E0B"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
+                    <path d="M12 8V13" stroke="#F59E0B" strokeWidth="1.5" strokeLinecap="round" />
                     <circle cx="12" cy="16" r="1" fill="#F59E0B" />
                   </svg>
                 </div>
@@ -141,12 +122,7 @@ export default function OTPVerificationModal({ isFullscreen }: DesignProps) {
             <div className="flex items-center justify-between rounded-xl bg-white/[0.03] px-4 py-3">
               <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10">
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                     <rect
                       x="2"
                       y="4"
@@ -156,18 +132,8 @@ export default function OTPVerificationModal({ isFullscreen }: DesignProps) {
                       stroke="#22C55E"
                       strokeWidth="1.5"
                     />
-                    <path
-                      d="M8 22H16"
-                      stroke="#22C55E"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M12 18V22"
-                      stroke="#22C55E"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
+                    <path d="M8 22H16" stroke="#22C55E" strokeWidth="1.5" strokeLinecap="round" />
+                    <path d="M12 18V22" stroke="#22C55E" strokeWidth="1.5" strokeLinecap="round" />
                   </svg>
                 </div>
                 <span className="text-sm text-slate-300">Active Sessions</span>
@@ -187,7 +153,7 @@ export default function OTPVerificationModal({ isFullscreen }: DesignProps) {
               'bg-gradient-to-r from-violet-600 to-indigo-600',
               'text-white shadow-lg shadow-violet-900/30',
               'transition-all duration-300',
-              'hover:from-violet-500 hover:to-indigo-500 hover:shadow-violet-900/50 hover:shadow-xl'
+              'hover:from-violet-500 hover:to-indigo-500 hover:shadow-xl hover:shadow-violet-900/50'
             )}
           >
             {/* Button shimmer effect */}

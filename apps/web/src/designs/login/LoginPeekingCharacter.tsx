@@ -9,7 +9,7 @@ export default function LoginPeekingCharacter({ viewport, isFullscreen, backgrou
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  
+
   // Interaction states for the peeking character
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [isEmailFocused, setIsEmailFocused] = useState(false);
@@ -86,10 +86,10 @@ export default function LoginPeekingCharacter({ viewport, isFullscreen, backgrou
       // Limit pupil movement to a max of 5px radius
       const maxOffset = 5;
       const angle = Math.atan2(dy, dx);
-      
+
       // Scale down movement slightly for smoother feel
       const intensity = Math.min(maxOffset, distance / 40);
-      
+
       const offsetX = Math.cos(angle) * intensity;
       const offsetY = Math.sin(angle) * intensity;
 
@@ -116,59 +116,60 @@ export default function LoginPeekingCharacter({ viewport, isFullscreen, backgrou
       style={getBackgroundStyle(background)}
     >
       {/* Decorative ambient glowing orbs */}
-      <div className="absolute top-1/4 left-1/4 h-80 w-80 rounded-full bg-violet-600/10 blur-[100px] animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-indigo-600/10 blur-[120px] animate-pulse delay-1000" />
-      
+      <div className="absolute left-1/4 top-1/4 h-80 w-80 animate-pulse rounded-full bg-violet-600/10 blur-[100px]" />
+      <div className="absolute bottom-1/4 right-1/4 h-96 w-96 animate-pulse rounded-full bg-indigo-600/10 blur-[120px] delay-1000" />
+
       {/* Card Wrapper - Relative position with high z-index to manage character placement */}
       <div className="relative w-full max-w-md">
-        
         {/* The Peeping Character - positioned absolutely behind the card */}
         <div
           className={cn(
-            'absolute left-1/2 -translate-x-1/2 transition-all duration-500 ease-out pointer-events-none select-none z-0',
+            'pointer-events-none absolute left-1/2 z-0 -translate-x-1/2 select-none transition-all duration-500 ease-out',
             // Cubic bezier bounce when peeking up, fast slide down when hiding
-            isPeeking 
-              ? 'bottom-[calc(100%-8px)] translate-y-0 opacity-100 scale-100' 
-              : 'bottom-[calc(100%-25px)] translate-y-12 opacity-0 scale-95'
+            isPeeking
+              ? 'bottom-[calc(100%-8px)] translate-y-0 scale-100 opacity-100'
+              : 'bottom-[calc(100%-25px)] translate-y-12 scale-95 opacity-0'
           )}
           style={{
-            transitionTimingFunction: isPeeking ? 'cubic-bezier(0.175, 0.885, 0.32, 1.275)' : 'ease-in',
+            transitionTimingFunction: isPeeking
+              ? 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+              : 'ease-in',
           }}
         >
           {/* Character Body */}
-          <div className="relative w-28 h-24 rounded-t-full bg-gradient-to-b from-violet-600 to-indigo-700 border-2 border-b-0 border-violet-400/30 flex items-end justify-center pb-3 shadow-lg shadow-violet-900/30">
+          <div className="relative flex h-24 w-28 items-end justify-center rounded-t-full border-2 border-b-0 border-violet-400/30 bg-gradient-to-b from-violet-600 to-indigo-700 pb-3 shadow-lg shadow-violet-900/30">
             {/* Cute Cheek Blushes */}
-            <div className="absolute left-3 bottom-4 w-3.5 h-2 bg-pink-400/40 rounded-full blur-[1px]" />
-            <div className="absolute right-3 bottom-4 w-3.5 h-2 bg-pink-400/40 rounded-full blur-[1px]" />
-            
+            <div className="absolute bottom-4 left-3 h-2 w-3.5 rounded-full bg-pink-400/40 blur-[1px]" />
+            <div className="absolute bottom-4 right-3 h-2 w-3.5 rounded-full bg-pink-400/40 blur-[1px]" />
+
             {/* Eyes Container */}
-            <div className="flex items-center gap-2 mb-2">
+            <div className="mb-2 flex items-center gap-2">
               {/* Left Eye */}
-              <div 
+              <div
                 ref={leftEyeRef}
-                className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-inner overflow-hidden"
+                className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-white shadow-inner"
               >
-                <div 
-                  className="w-3.5 h-3.5 rounded-full bg-slate-950 transition-transform duration-100 ease-out"
+                <div
+                  className="h-3.5 w-3.5 rounded-full bg-slate-950 transition-transform duration-100 ease-out"
                   style={getPupilStyle(leftEyeRef)}
                 />
               </div>
 
               {/* Right Eye */}
-              <div 
+              <div
                 ref={rightEyeRef}
-                className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-inner overflow-hidden"
+                className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-white shadow-inner"
               >
-                <div 
-                  className="w-3.5 h-3.5 rounded-full bg-slate-950 transition-transform duration-100 ease-out"
+                <div
+                  className="h-3.5 w-3.5 rounded-full bg-slate-950 transition-transform duration-100 ease-out"
                   style={getPupilStyle(rightEyeRef)}
                 />
               </div>
             </div>
 
             {/* Little Hands Gripping the Edge */}
-            <div className="absolute -bottom-1 left-4 w-5 h-3 rounded-t-full bg-violet-500 border border-b-0 border-violet-400/40" />
-            <div className="absolute -bottom-1 right-4 w-5 h-3 rounded-t-full bg-violet-500 border border-b-0 border-violet-400/40" />
+            <div className="absolute -bottom-1 left-4 h-3 w-5 rounded-t-full border border-b-0 border-violet-400/40 bg-violet-500" />
+            <div className="absolute -bottom-1 right-4 h-3 w-5 rounded-t-full border border-b-0 border-violet-400/40 bg-violet-500" />
           </div>
         </div>
 
@@ -182,7 +183,10 @@ export default function LoginPeekingCharacter({ viewport, isFullscreen, backgrou
           <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <label
+                htmlFor="email"
+                className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400"
+              >
                 Email Address
               </label>
               <div className="relative">
@@ -203,7 +207,7 @@ export default function LoginPeekingCharacter({ viewport, isFullscreen, backgrou
                   autoComplete="email"
                   required
                 />
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-500">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
                   <Mail className="h-4 w-4" />
                 </div>
               </div>
@@ -211,13 +215,16 @@ export default function LoginPeekingCharacter({ viewport, isFullscreen, backgrou
 
             {/* Password Field */}
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <div className="mb-1.5 flex items-center justify-between">
+                <label
+                  htmlFor="password"
+                  className="block text-xs font-semibold uppercase tracking-wider text-slate-400"
+                >
                   Password
                 </label>
                 <a
                   href="#"
-                  className="text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors"
+                  className="text-xs font-medium text-violet-400 transition-colors hover:text-violet-300"
                 >
                   Forgot password?
                 </a>
@@ -243,15 +250,15 @@ export default function LoginPeekingCharacter({ viewport, isFullscreen, backgrou
                   autoComplete="current-password"
                   required
                 />
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-500">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
                   <Lock className="h-4 w-4" />
                 </div>
-                
+
                 {/* Visibility Toggle Button */}
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-white transition-colors"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 transition-colors hover:text-white"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -260,7 +267,7 @@ export default function LoginPeekingCharacter({ viewport, isFullscreen, backgrou
 
             {/* Remember me & submit */}
             <div className="flex items-center">
-              <label className="flex cursor-pointer items-center gap-2 select-none">
+              <label className="flex cursor-pointer select-none items-center gap-2">
                 <input
                   type="checkbox"
                   className={cn(
@@ -275,11 +282,11 @@ export default function LoginPeekingCharacter({ viewport, isFullscreen, backgrou
             <button
               type="submit"
               className={cn(
-                'w-full rounded-xl py-3 px-4 font-semibold text-white',
+                'w-full rounded-xl px-4 py-3 font-semibold text-white',
                 'bg-gradient-to-r from-violet-600 to-indigo-600',
                 'hover:from-violet-500 hover:to-indigo-500',
                 'shadow-lg shadow-violet-950/40 hover:shadow-violet-950/60',
-                'active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-violet-500/50',
+                'focus:outline-none focus:ring-2 focus:ring-violet-500/50 active:scale-[0.98]',
                 'transition-all duration-200'
               )}
             >
@@ -292,7 +299,7 @@ export default function LoginPeekingCharacter({ viewport, isFullscreen, backgrou
               Don&apos;t have an account?{' '}
               <a
                 href="#"
-                className="font-semibold text-violet-400 hover:text-violet-300 transition-colors"
+                className="font-semibold text-violet-400 transition-colors hover:text-violet-300"
               >
                 Sign up
               </a>
@@ -303,8 +310,15 @@ export default function LoginPeekingCharacter({ viewport, isFullscreen, backgrou
         {/* Keyboard shortcut clues */}
         {!isFullscreen && (
           <div className="mt-4 text-center text-xs text-slate-500">
-            Press <kbd className="mx-1 rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px]">F</kbd> for fullscreen •{' '}
-            <kbd className="mx-1 rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px]">D</kbd> for device size
+            Press{' '}
+            <kbd className="mx-1 rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px]">
+              F
+            </kbd>{' '}
+            for fullscreen •{' '}
+            <kbd className="mx-1 rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px]">
+              D
+            </kbd>{' '}
+            for device size
           </div>
         )}
       </div>

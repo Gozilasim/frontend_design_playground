@@ -53,8 +53,10 @@ export function CopyPromptButton() {
         'transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring',
         copyState === 'copied' && 'bg-green-500/15 text-green-400',
         copyState === 'no-prompt' && 'bg-amber-500/15 text-amber-400',
-        copyState === 'idle' && hasPrompt && 'text-muted-foreground hover:bg-accent hover:text-foreground',
-        copyState === 'idle' && !hasPrompt && 'cursor-not-allowed text-muted-foreground/40',
+        copyState === 'idle' &&
+          hasPrompt &&
+          'text-muted-foreground hover:bg-accent hover:text-foreground',
+        copyState === 'idle' && !hasPrompt && 'text-muted-foreground/40 cursor-not-allowed'
       )}
       aria-label="Copy design prompt"
       title={!hasPrompt ? 'No prompt available for this design' : 'Copy prompt to clipboard'}

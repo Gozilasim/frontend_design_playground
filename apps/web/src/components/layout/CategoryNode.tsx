@@ -150,7 +150,7 @@ function DesignItem({
     }
 
     updatePosition();
-    
+
     // Observe item size changes
     if (itemRef.current) {
       resizeObserverRef.current = new ResizeObserver(updatePosition);
@@ -160,7 +160,7 @@ function DesignItem({
     // Update on scroll/resize
     window.addEventListener('scroll', updatePosition, { passive: true });
     window.addEventListener('resize', updatePosition);
-    
+
     // Also listen for sidebar width changes
     const sidebar = sidebarRef.current;
     if (sidebar) {
@@ -184,7 +184,7 @@ function DesignItem({
     <>
       {isSelected && indicatorRect && (
         <div
-          className="pointer-events-none fixed z-[60] bg-primary/20 border border-primary/40 rounded-md shadow-xl shadow-primary/20 animate-scale-in transition-all duration-150 ease-out"
+          className="bg-primary/20 border-primary/40 shadow-primary/20 pointer-events-none fixed z-[60] animate-scale-in rounded-md border shadow-xl transition-all duration-150 ease-out"
           style={{
             left: indicatorRect.left,
             top: indicatorRect.top,
@@ -206,7 +206,7 @@ function DesignItem({
           'hover:bg-accent hover:text-foreground',
           'transition-colors duration-150',
           'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:ring-offset-background',
-          isSelected && 'bg-accent font-medium text-foreground z-10 relative',
+          isSelected && 'relative z-10 bg-accent font-medium text-foreground',
           isHovered && !isSelected && 'bg-accent/50'
         )}
       >

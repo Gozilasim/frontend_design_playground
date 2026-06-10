@@ -98,7 +98,7 @@ export default function LampToggle({ isFullscreen }: DesignProps) {
   return (
     <div
       className={cn(
-        'flex h-full w-full items-center justify-center overflow-hidden relative select-none',
+        'relative flex h-full w-full select-none items-center justify-center overflow-hidden',
         'transition-colors duration-700 ease-in-out'
       )}
       style={{
@@ -117,7 +117,7 @@ export default function LampToggle({ isFullscreen }: DesignProps) {
 
       {/* Light cone glow - only visible when lamp is on */}
       <div
-        className="absolute transition-all duration-700 ease-in-out pointer-events-none"
+        className="pointer-events-none absolute transition-all duration-700 ease-in-out"
         style={{
           top: '30%',
           left: '50%',
@@ -133,7 +133,7 @@ export default function LampToggle({ isFullscreen }: DesignProps) {
 
       {/* Secondary soft glow */}
       <div
-        className="absolute transition-all duration-700 ease-in-out pointer-events-none"
+        className="pointer-events-none absolute transition-all duration-700 ease-in-out"
         style={{
           top: '25%',
           left: '50%',
@@ -141,7 +141,8 @@ export default function LampToggle({ isFullscreen }: DesignProps) {
           width: isOn ? '300px' : '0px',
           height: isOn ? '400px' : '0px',
           opacity: isOn ? 0.6 : 0,
-          background: 'radial-gradient(ellipse at 50% 0%, rgba(255, 200, 80, 0.2) 0%, transparent 70%)',
+          background:
+            'radial-gradient(ellipse at 50% 0%, rgba(255, 200, 80, 0.2) 0%, transparent 70%)',
           filter: 'blur(30px)',
         }}
       />
@@ -152,7 +153,7 @@ export default function LampToggle({ isFullscreen }: DesignProps) {
         <div className="relative flex flex-col items-center">
           {/* Ceiling mount / top anchor bar */}
           <div
-            className="w-20 h-2 rounded-b-md transition-colors duration-700"
+            className="h-2 w-20 rounded-b-md transition-colors duration-700"
             style={{
               backgroundColor: isOn ? '#B8B0A0' : '#3A3550',
             }}
@@ -160,7 +161,7 @@ export default function LampToggle({ isFullscreen }: DesignProps) {
 
           {/* Lamp rod connecting mount to shade */}
           <div
-            className="w-1.5 h-10 transition-colors duration-700"
+            className="h-10 w-1.5 transition-colors duration-700"
             style={{
               backgroundColor: isOn ? '#9E978A' : '#2E2944',
             }}
@@ -188,7 +189,7 @@ export default function LampToggle({ isFullscreen }: DesignProps) {
 
             {/* Bulb glow halo (visible when on) */}
             <div
-              className="absolute -bottom-4 left-1/2 -translate-x-1/2 rounded-full transition-all duration-700 pointer-events-none"
+              className="pointer-events-none absolute -bottom-4 left-1/2 -translate-x-1/2 rounded-full transition-all duration-700"
               style={{
                 width: isOn ? '60px' : '20px',
                 height: isOn ? '60px' : '20px',
@@ -203,7 +204,7 @@ export default function LampToggle({ isFullscreen }: DesignProps) {
 
             {/* The light bulb */}
             <div
-              className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-5 h-6 rounded-b-full transition-all duration-500"
+              className="absolute -bottom-2 left-1/2 h-6 w-5 -translate-x-1/2 rounded-b-full transition-all duration-500"
               style={{
                 backgroundColor: isOn ? '#FFF0C0' : '#1A1830',
                 boxShadow: isOn ? '0 4px 20px rgba(255, 200, 80, 0.6)' : 'none',
@@ -212,18 +213,17 @@ export default function LampToggle({ isFullscreen }: DesignProps) {
           </div>
 
           {/* Pull Chain Assembly */}
-          <div className="relative flex flex-col items-center mt-1">
+          <div className="relative mt-1 flex flex-col items-center">
             {/* Chain string - drawn as a thin vertical line that stretches */}
             <div
-              className={cn(
-                'w-[2px] transition-all origin-top',
-                chainSwing ? 'animate-pulse' : ''
-              )}
+              className={cn('w-[2px] origin-top transition-all', chainSwing ? 'animate-pulse' : '')}
               style={{
                 height: `${chainLength}px`,
                 backgroundColor: isOn ? '#9E978A' : '#4A4570',
                 transitionDuration: isDragging ? '0ms' : '300ms',
-                transitionTimingFunction: isDragging ? 'linear' : 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+                transitionTimingFunction: isDragging
+                  ? 'linear'
+                  : 'cubic-bezier(0.34, 1.56, 0.64, 1)',
               }}
             />
 
@@ -231,7 +231,7 @@ export default function LampToggle({ isFullscreen }: DesignProps) {
             {Array.from({ length: Math.floor(chainLength / 12) }, (_, i) => (
               <div
                 key={i}
-                className="absolute w-[5px] h-[5px] rounded-full transition-colors duration-700"
+                className="absolute h-[5px] w-[5px] rounded-full transition-colors duration-700"
                 style={{
                   top: `${8 + i * 12}px`,
                   backgroundColor: isOn ? '#B8B0A0' : '#5A5580',
@@ -247,14 +247,14 @@ export default function LampToggle({ isFullscreen }: DesignProps) {
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerUp}
               className={cn(
-                'relative cursor-grab active:cursor-grabbing touch-none',
+                'relative cursor-grab touch-none active:cursor-grabbing',
                 'transition-transform duration-300',
                 isDragging ? 'scale-110' : 'hover:scale-105'
               )}
             >
               {/* Decorative ball at the end of the chain */}
               <div
-                className="w-5 h-5 rounded-full transition-all duration-700 shadow-md"
+                className="h-5 w-5 rounded-full shadow-md transition-all duration-700"
                 style={{
                   backgroundColor: isOn ? '#8B8478' : '#5A5580',
                   boxShadow: isDragging
@@ -271,7 +271,7 @@ export default function LampToggle({ isFullscreen }: DesignProps) {
 
         {/* Instruction text below the chain */}
         <p
-          className="mt-8 text-sm font-medium tracking-wider uppercase transition-colors duration-700"
+          className="mt-8 text-sm font-medium uppercase tracking-wider transition-colors duration-700"
           style={{
             color: isOn ? 'rgba(80, 70, 60, 0.6)' : 'rgba(180, 170, 200, 0.4)',
           }}
@@ -281,7 +281,7 @@ export default function LampToggle({ isFullscreen }: DesignProps) {
 
         {/* Demo content card - to showcase the light/dark mode effect */}
         <div
-          className="mt-8 w-72 rounded-2xl border p-6 transition-all duration-700 backdrop-blur-sm"
+          className="mt-8 w-72 rounded-2xl border p-6 backdrop-blur-sm transition-all duration-700"
           style={{
             backgroundColor: isOn ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.04)',
             borderColor: isOn ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)',
@@ -291,9 +291,9 @@ export default function LampToggle({ isFullscreen }: DesignProps) {
           }}
         >
           {/* Card header */}
-          <div className="flex items-center gap-3 mb-4">
+          <div className="mb-4 flex items-center gap-3">
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors duration-700"
+              className="flex h-10 w-10 items-center justify-center rounded-xl transition-colors duration-700"
               style={{
                 backgroundColor: isOn ? '#FEF3C7' : '#312E81',
               }}
@@ -334,7 +334,7 @@ export default function LampToggle({ isFullscreen }: DesignProps) {
             </div>
             <div>
               <h3
-                className="font-semibold text-sm transition-colors duration-700"
+                className="text-sm font-semibold transition-colors duration-700"
                 style={{
                   color: isOn ? '#1C1917' : '#E8E5F0',
                 }}
@@ -368,7 +368,7 @@ export default function LampToggle({ isFullscreen }: DesignProps) {
 
           {/* Fake action button */}
           <div
-            className="mt-5 h-9 rounded-xl flex items-center justify-center text-xs font-semibold transition-all duration-700"
+            className="mt-5 flex h-9 items-center justify-center rounded-xl text-xs font-semibold transition-all duration-700"
             style={{
               backgroundColor: isOn ? '#1C1917' : '#6366F1',
               color: '#FFFFFF',

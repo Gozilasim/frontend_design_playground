@@ -2,6 +2,7 @@ import { ViewportPreset } from './viewportPresets';
 import { LoginPeekingCharacter } from '@/designs/login';
 import { LampToggle, OTPVerificationModal } from '@/designs/components';
 import { NginxBlueGreen, CorsAllowedOrigins } from '@/designs/dashboard';
+import { WorkflowSchema } from '@/designs/chatbot';
 
 export interface BackgroundConfig {
   type: 'solid' | 'gradient' | 'image' | 'grid';
@@ -32,37 +33,50 @@ export const designRegistry: DesignEntry[] = [
     id: 'nginx-blue-green',
     categoryId: 'dashboard',
     title: 'Nginx Blue-Green Deployment',
-    description: 'An interactive visualization of zero-downtime Nginx Blue-Green deployment with dynamic routing and live explanation tabs.',
+    description:
+      'An interactive visualization of zero-downtime Nginx Blue-Green deployment with dynamic routing and live explanation tabs.',
     component: NginxBlueGreen,
     tags: ['nginx', 'devops', 'deployment', 'interactive', 'animation', 'glassmorphism'],
-    recommendedViewport: { width: 1440, height: 900, label: 'Desktop 1440×900', deviceType: 'desktop' },
+    recommendedViewport: {
+      width: 1440,
+      height: 900,
+      label: 'Desktop 1440×900',
+      deviceType: 'desktop',
+    },
     prompt: `Create an interactive Nginx Blue-Green Deployment visualizer using React and Tailwind CSS.
 The visualizer must show traffic (simulated as glowing particle dots) flowing from clients to Nginx, and from Nginx to either the active Green Server (v1.0.0) or Blue Server (v2.0.0).
 Include a central Nginx dashboard card with two tabs:
 1. nginx.conf: displaying the dynamic upstream routing code.
 2. Animation Explanation: detailing the step-by-step logic of the current deployment state.
-Include manual controls to trigger the switch, reload Nginx, or step through the process.`
+Include manual controls to trigger the switch, reload Nginx, or step through the process.`,
   },
   {
     id: 'cors-allowed-origins',
     categoryId: 'dashboard',
     title: 'CORS Allowed Origins',
-    description: 'An interactive visualization of cross-origin resource sharing with animated request flow, guard scanning, and origin filtering.',
+    description:
+      'An interactive visualization of cross-origin resource sharing with animated request flow, guard scanning, and origin filtering.',
     component: CorsAllowedOrigins,
     tags: ['cors', 'security', 'network', 'interactive', 'animation', 'glassmorphism'],
-    recommendedViewport: { width: 1440, height: 900, label: 'Desktop 1440×900', deviceType: 'desktop' },
+    recommendedViewport: {
+      width: 1440,
+      height: 900,
+      label: 'Desktop 1440×900',
+      deviceType: 'desktop',
+    },
     prompt: `Create an interactive CORS Allowed Origins visualizer using React and Tailwind CSS.
 The visualizer must show animated request particles flowing from Browser to Guard to Server.
 Include three phases: Rejected (origin blocked), Preflight (OPTIONS check), Allowed (full access).
 Add a Guard node with scanning animation and pulse rings for visual feedback.
 Include toggle controls to enable/disable allowed origins and see real-time results.
-Use a dark theme optimized for screen recording.`
+Use a dark theme optimized for screen recording.`,
   },
   {
     id: 'peeking-character-login',
     categoryId: 'login',
     title: 'Peeking Character',
-    description: 'A cute character peeks up from the bottom of the card when you type your password.',
+    description:
+      'A cute character peeks up from the bottom of the card when you type your password.',
     component: LoginPeekingCharacter,
     tags: ['animated', 'interactive', 'cute', 'glassmorphism', 'dark-mode'],
     recommendedViewport: { width: 375, height: 667, label: 'Mobile 375×667', deviceType: 'mobile' },
@@ -541,16 +555,22 @@ Implementation Guidelines
 Steps to integrate
  0. Copy paste all the code above in the correct directories
  1. Install external dependencies
- 2. Use lucide-react icons for SVG symbols or logos`
+ 2. Use lucide-react icons for SVG symbols or logos`,
   },
   {
     id: 'lamp-toggle',
     categoryId: 'components',
     title: 'Desk Lamp Theme Toggle',
-    description: 'An interactive desk lamp with a pull-chain switch that toggles between light and dark mode.',
+    description:
+      'An interactive desk lamp with a pull-chain switch that toggles between light and dark mode.',
     component: LampToggle,
     tags: ['animated', 'interactive', 'light-mode', 'dark-mode', 'physics', 'toggle'],
-    recommendedViewport: { width: 375, height: 667, label: 'Mobile 375\u00d7667', deviceType: 'mobile' },
+    recommendedViewport: {
+      width: 375,
+      height: 667,
+      label: 'Mobile 375\u00d7667',
+      deviceType: 'mobile',
+    },
     prompt: `You are given a task to integrate an existing React component in the codebase
 
 The codebase should support:
@@ -1006,10 +1026,16 @@ Steps to integrate:
     id: 'otp-verification-modal',
     categoryId: 'components',
     title: 'OTP Verification Modal',
-    description: 'An animated glassmorphic OTP verification modal with merging inputs, 60s resend timer, 5-second loading countdown, and success confetti celebration.',
+    description:
+      'An animated glassmorphic OTP verification modal with merging inputs, 60s resend timer, 5-second loading countdown, and success confetti celebration.',
     component: OTPVerificationModal,
     tags: ['animated', 'interactive', 'modal', 'security', 'particle', 'glassmorphism'],
-    recommendedViewport: { width: 375, height: 667, label: 'Mobile 375\u00d7667', deviceType: 'mobile' },
+    recommendedViewport: {
+      width: 375,
+      height: 667,
+      label: 'Mobile 375\u00d7667',
+      deviceType: 'mobile',
+    },
     prompt: `You are given a task to integrate an existing React component in the codebase
 
 The codebase should support:
@@ -1070,6 +1096,30 @@ Internal dependencies: @/lib/utils (cn helper)
 Steps to integrate:
  0. Copy paste all the code above in the correct directories
  1. Ensure @/lib/utils has the cn helper (standard shadcn setup)`,
+  },
+  {
+    id: 'workflow-schema',
+    categoryId: 'chatbot',
+    title: 'Workflow Engineering Schema',
+    description:
+      'An interactive visualization of LLM workflow engineering: resolver, router, session state, and execution agent.',
+    component: WorkflowSchema,
+    tags: ['workflow', 'agent', 'state-machine', 'interactive', 'animation', 'glassmorphism'],
+    recommendedViewport: {
+      width: 1024,
+      height: 768,
+      label: 'Desktop 1024×768',
+      deviceType: 'desktop',
+    },
+    prompt: `Create an interactive Workflow Engineering Schema visualizer using React and Tailwind CSS.
+The visualizer must show traffic flowing through nodes: User Query, Resolver, Router, Session State, Clarify Node, Small LLM (Chitchat), and Execution.
+Include five tabs:
+1. NEW TASK
+2. CONTINUE WORKFLOW
+3. CLARIFY WORKFLOW
+4. CHITCHAT BYPASS
+5. WORKFLOW ENGINEERING
+Include dynamic badge popups, bounce animations, and path flows.`,
   },
 ];
 

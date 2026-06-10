@@ -17,13 +17,16 @@ interface LogEntry {
 
 function LogLine({ entry }: { entry: LogEntry }) {
   const colorClass =
-    entry.highlight === 'success' ? 'text-[#10b981]'
-    : entry.highlight === 'danger' ? 'text-[#f43f5e]'
-    : entry.highlight === 'warning' ? 'text-[#f59e0b]'
-    : '';
+    entry.highlight === 'success'
+      ? 'text-[#10b981]'
+      : entry.highlight === 'danger'
+        ? 'text-[#f43f5e]'
+        : entry.highlight === 'warning'
+          ? 'text-[#f59e0b]'
+          : '';
   return (
-    <div className="flex mb-1">
-      <span className="text-[#38bdf8] mr-2 select-none">$</span>
+    <div className="mb-1 flex">
+      <span className="mr-2 select-none text-[#38bdf8]">$</span>
       <span className={colorClass}>{entry.text}</span>
     </div>
   );
@@ -55,7 +58,9 @@ export default function CorsAllowedOrigins({ viewport }: DesignProps) {
     const style = document.createElement('style');
     style.textContent = `@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}`;
     document.head.appendChild(style);
-    return () => { document.head.removeChild(style); };
+    return () => {
+      document.head.removeChild(style);
+    };
   }, []);
 
   const addLog = useCallback((text: string, highlight?: 'success' | 'danger' | 'warning') => {
@@ -66,7 +71,8 @@ export default function CorsAllowedOrigins({ viewport }: DesignProps) {
   const playSound = useCallback((type: 'success' | 'error' | 'click') => {
     try {
       if (!audioCtxRef.current) {
-        audioCtxRef.current = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+        audioCtxRef.current = new (window.AudioContext ||
+          (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
       }
       const ctx = audioCtxRef.current;
       if (ctx.state === 'suspended') ctx.resume();
@@ -146,7 +152,10 @@ export default function CorsAllowedOrigins({ viewport }: DesignProps) {
 
     setBrowserState('success');
     playSound('success');
-    addLog('Success: Request Origin matches Allowed Origins list. Releasing sandbox hold.', 'success');
+    addLog(
+      'Success: Request Origin matches Allowed Origins list. Releasing sandbox hold.',
+      'success'
+    );
     await delay(1200);
 
     setPacketPos('frontend');
@@ -160,7 +169,10 @@ export default function CorsAllowedOrigins({ viewport }: DesignProps) {
 
   const runStageTwo = useCallback(async () => {
     setStep2Active(true);
-    addLog('STAGE 2 START: Host at [malicious-site.xyz] attempts cross-origin connection.', 'warning');
+    addLog(
+      'STAGE 2 START: Host at [malicious-site.xyz] attempts cross-origin connection.',
+      'warning'
+    );
 
     setPacketState('request');
     setPacketPos('frontend');
@@ -265,55 +277,110 @@ export default function CorsAllowedOrigins({ viewport }: DesignProps) {
     return { left: 'calc(100% - 195px)', top: '136px' };
   })();
 
-  const packetLabel = packetState === 'success' || packetState === 'blocked' ? 'HTTP 200 OK' : 'HTTP GET';
+  const packetLabel =
+    packetState === 'success' || packetState === 'blocked' ? 'HTTP 200 OK' : 'HTTP GET';
 
-  const packetSubtext = packetState === 'success'
-    ? 'Allow-Origin: trusted-app.com'
-    : packetState === 'blocked'
+  const packetSubtext =
+    packetState === 'success'
       ? 'Allow-Origin: trusted-app.com'
-      : currentStage === 1
-        ? 'Origin: trusted-app.com'
-        : 'Origin: malicious-site.xyz';
+      : packetState === 'blocked'
+        ? 'Allow-Origin: trusted-app.com'
+        : currentStage === 1
+          ? 'Origin: trusted-app.com'
+          : 'Origin: malicious-site.xyz';
 
-  const packetBorderColor = packetState === 'success'
-    ? 'var(--color-success, #10b981)'
-    : packetState === 'blocked'
-      ? 'var(--color-danger, #f43f5e)'
-      : 'var(--color-primary, #38bdf8)';
+  const packetBorderColor =
+    packetState === 'success'
+      ? 'var(--color-success, #10b981)'
+      : packetState === 'blocked'
+        ? 'var(--color-danger, #f43f5e)'
+        : 'var(--color-primary, #38bdf8)';
 
-  const packetShadow = packetState === 'success'
-    ? '0 10px 25px rgba(16, 185, 129, 0.2)'
-    : packetState === 'blocked'
-      ? '0 10px 25px rgba(244, 63, 94, 0.2)'
-      : '0 10px 25px rgba(56, 189, 248, 0.2)';
+  const packetShadow =
+    packetState === 'success'
+      ? '0 10px 25px rgba(16, 185, 129, 0.2)'
+      : packetState === 'blocked'
+        ? '0 10px 25px rgba(244, 63, 94, 0.2)'
+        : '0 10px 25px rgba(56, 189, 248, 0.2)';
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center overflow-hidden font-sans p-4 relative select-none" style={{ backgroundColor: '#090d16', color: '#f3f4f6' }}>
-      <div className="absolute pointer-events-none" style={{ width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(56,189,248,0.08) 0%, rgba(0,0,0,0) 70%)', top: '10%', left: '15%' }} />
-      <div className="absolute pointer-events-none" style={{ width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(16,185,129,0.05) 0%, rgba(0,0,0,0) 70%)', bottom: '10%', right: '10%' }} />
+    <div
+      className="relative flex h-full w-full select-none flex-col items-center justify-center overflow-hidden p-4 font-sans"
+      style={{ backgroundColor: '#090d16', color: '#f3f4f6' }}
+    >
+      <div
+        className="pointer-events-none absolute"
+        style={{
+          width: '400px',
+          height: '400px',
+          background: 'radial-gradient(circle, rgba(56,189,248,0.08) 0%, rgba(0,0,0,0) 70%)',
+          top: '10%',
+          left: '15%',
+        }}
+      />
+      <div
+        className="pointer-events-none absolute"
+        style={{
+          width: '500px',
+          height: '500px',
+          background: 'radial-gradient(circle, rgba(16,185,129,0.05) 0%, rgba(0,0,0,0) 70%)',
+          bottom: '10%',
+          right: '10%',
+        }}
+      />
 
-      <div className="relative z-10 w-full max-w-[900px] flex flex-col gap-5">
+      <div className="relative z-10 flex w-full max-w-[900px] flex-col gap-5">
         <div className="flex items-center justify-center gap-3">
-          <button onClick={handleTogglePlay} className="px-4 py-2.5 rounded-[10px] text-[12px] font-medium flex items-center gap-2 transition-all hover:bg-white/[0.08]" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <button
+            onClick={handleTogglePlay}
+            className="flex items-center gap-2 rounded-[10px] px-4 py-2.5 text-[12px] font-medium transition-all hover:bg-white/[0.08]"
+            style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}
+          >
             {isPlaying ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
             <span>{isPlaying ? 'Autoplay Running' : 'Autoplay Paused'}</span>
           </button>
-          <button onClick={handleSkipStage} className="px-4 py-2.5 rounded-[10px] text-[12px] font-medium flex items-center gap-2 transition-all hover:bg-white/[0.08]" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <button
+            onClick={handleSkipStage}
+            className="flex items-center gap-2 rounded-[10px] px-4 py-2.5 text-[12px] font-medium transition-all hover:bg-white/[0.08]"
+            style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}
+          >
             <span>Skip Stage</span>
             <SkipForward className="h-3 w-3" />
           </button>
         </div>
 
         <header className="text-center">
-          <h1 className="text-[28px] font-bold tracking-tight mb-2" style={{ background: 'linear-gradient(135deg, #fff 0%, #a5f3fc 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <h1
+            className="mb-2 text-[28px] font-bold tracking-tight"
+            style={{
+              background: 'linear-gradient(135deg, #fff 0%, #a5f3fc 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
             Cross-Origin Resource Sharing (CORS)
           </h1>
-          <p className="text-[14px] max-w-[500px] mx-auto leading-relaxed" style={{ color: '#9ca3af' }}>
+          <p
+            className="mx-auto max-w-[500px] text-[14px] leading-relaxed"
+            style={{ color: '#9ca3af' }}
+          >
             A visual walkthrough of the security handshakes governing modern web architectures.
           </p>
         </header>
 
-        <div className="flex w-fit mx-auto rounded-full p-1.5 backdrop-blur-lg" style={{ background: 'rgba(17, 24, 39, 0.7)', border: '1px solid rgba(255,255,255,0.08)' }}>
+        <div
+          className="mx-auto flex w-fit rounded-full p-1.5 backdrop-blur-lg"
+          style={{
+            background: 'rgba(17, 24, 39, 0.7)',
+            border: '1px solid rgba(255,255,255,0.08)',
+          }}
+        >
           <button
             onClick={() => {
               playSound('click');
@@ -322,9 +389,21 @@ export default function CorsAllowedOrigins({ viewport }: DesignProps) {
               stageRef.current = 1;
               setTimeout(() => setIsPlaying(true), 100);
             }}
-            className={cn('px-4 py-2 rounded-full text-[13px] font-medium transition-all duration-400 flex items-center gap-2', step1Active ? 'bg-white/[0.08] text-white shadow-md' : 'text-[#9ca3af] hover:text-white')}
+            className={cn(
+              'duration-400 flex items-center gap-2 rounded-full px-4 py-2 text-[13px] font-medium transition-all',
+              step1Active
+                ? 'bg-white/[0.08] text-white shadow-md'
+                : 'text-[#9ca3af] hover:text-white'
+            )}
           >
-            <span className={cn('inline-flex w-[18px] h-[18px] rounded-full items-center justify-center text-[10px] font-bold transition-colors', step1Active ? 'bg-[#10b981] text-black' : 'bg-white/10')}>1</span>
+            <span
+              className={cn(
+                'inline-flex h-[18px] w-[18px] items-center justify-center rounded-full text-[10px] font-bold transition-colors',
+                step1Active ? 'bg-[#10b981] text-black' : 'bg-white/10'
+              )}
+            >
+              1
+            </span>
             <span className={isVertical ? 'hidden sm:inline' : ''}>Trusted Origin</span>
             <span className={isVertical ? 'sm:hidden' : 'hidden'}>Trusted</span>
           </button>
@@ -336,87 +415,290 @@ export default function CorsAllowedOrigins({ viewport }: DesignProps) {
               stageRef.current = 2;
               setTimeout(() => setIsPlaying(true), 100);
             }}
-            className={cn('px-4 py-2 rounded-full text-[13px] font-medium transition-all duration-400 flex items-center gap-2', step2Active ? 'bg-white/[0.08] text-white shadow-md' : 'text-[#9ca3af] hover:text-white')}
+            className={cn(
+              'duration-400 flex items-center gap-2 rounded-full px-4 py-2 text-[13px] font-medium transition-all',
+              step2Active
+                ? 'bg-white/[0.08] text-white shadow-md'
+                : 'text-[#9ca3af] hover:text-white'
+            )}
           >
-            <span className={cn('inline-flex w-[18px] h-[18px] rounded-full items-center justify-center text-[10px] font-bold transition-colors', step2Active ? 'bg-[#f43f5e] text-white' : 'bg-white/10')}>2</span>
+            <span
+              className={cn(
+                'inline-flex h-[18px] w-[18px] items-center justify-center rounded-full text-[10px] font-bold transition-colors',
+                step2Active ? 'bg-[#f43f5e] text-white' : 'bg-white/10'
+              )}
+            >
+              2
+            </span>
             <span className={isVertical ? 'hidden sm:inline' : ''}>Untrusted Origin</span>
             <span className={isVertical ? 'sm:hidden' : 'hidden'}>Untrusted</span>
           </button>
         </div>
 
         <div
-          className={cn('relative rounded-[20px] flex justify-between items-center backdrop-blur-xl overflow-hidden', isVertical ? 'h-[380px] px-6 flex-col justify-around' : 'h-[320px] px-[60px]', boardShaking && 'animate-[shake_0.4s_ease-in-out]')}
-          style={{ background: 'rgba(17, 24, 39, 0.7)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}
+          className={cn(
+            'relative flex items-center justify-between overflow-hidden rounded-[20px] backdrop-blur-xl',
+            isVertical ? 'h-[380px] flex-col justify-around px-6' : 'h-[320px] px-[60px]',
+            boardShaking && 'animate-[shake_0.4s_ease-in-out]'
+          )}
+          style={{
+            background: 'rgba(17, 24, 39, 0.7)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+          }}
         >
           {!isVertical && (
             <>
-              <div className="absolute h-[1px] z-[1]" style={{ left: '190px', width: '180px', top: '50%', background: 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0) 100%)' }} />
-              <div className="absolute h-[1px] z-[1]" style={{ left: '510px', width: '180px', top: '50%', background: 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0) 100%)' }} />
+              <div
+                className="absolute z-[1] h-[1px]"
+                style={{
+                  left: '190px',
+                  width: '180px',
+                  top: '50%',
+                  background:
+                    'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0) 100%)',
+                }}
+              />
+              <div
+                className="absolute z-[1] h-[1px]"
+                style={{
+                  left: '510px',
+                  width: '180px',
+                  top: '50%',
+                  background:
+                    'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0) 100%)',
+                }}
+              />
             </>
           )}
 
           {isVertical && (
             <>
-              <div className="absolute w-[1px] z-[1]" style={{ top: '120px', height: '40px', left: '50%', background: 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0) 100%)' }} />
-              <div className="absolute w-[1px] z-[1]" style={{ top: '220px', height: '40px', left: '50%', background: 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0) 100%)' }} />
+              <div
+                className="absolute z-[1] w-[1px]"
+                style={{
+                  top: '120px',
+                  height: '40px',
+                  left: '50%',
+                  background:
+                    'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0) 100%)',
+                }}
+              />
+              <div
+                className="absolute z-[1] w-[1px]"
+                style={{
+                  top: '220px',
+                  height: '40px',
+                  left: '50%',
+                  background:
+                    'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0) 100%)',
+                }}
+              />
             </>
           )}
 
           <div
-            className={cn('relative flex flex-col items-center justify-center rounded-[14px] z-[2] transition-all duration-500', isVertical ? 'w-[140px] h-[80px]' : 'w-[150px] h-[110px]', frontendState === 'success' && 'border-[#10b981] shadow-[0_0_20px_rgba(16,185,129,0.15)]', frontendState === 'danger' && 'border-[#f43f5e] shadow-[0_0_20px_rgba(244,63,94,0.15)]', frontendState === 'default' && 'border-[rgba(245,158,11,0.3)]')}
-            style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)' }}
+            className={cn(
+              'relative z-[2] flex flex-col items-center justify-center rounded-[14px] transition-all duration-500',
+              isVertical ? 'h-[80px] w-[140px]' : 'h-[110px] w-[150px]',
+              frontendState === 'success' &&
+                'border-[#10b981] shadow-[0_0_20px_rgba(16,185,129,0.15)]',
+              frontendState === 'danger' &&
+                'border-[#f43f5e] shadow-[0_0_20px_rgba(244,63,94,0.15)]',
+              frontendState === 'default' && 'border-[rgba(245,158,11,0.3)]'
+            )}
+            style={{
+              background: 'rgba(15, 23, 42, 0.6)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)',
+            }}
           >
-            <div className="absolute inset-0 rounded-[14px] pointer-events-none" style={{ padding: '1px', background: 'linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01))', WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude' }} />
-            <div className="absolute top-[10px] right-[10px] w-[6px] h-[6px] rounded-full transition-all duration-400" style={{ background: frontendState === 'success' ? '#10b981' : frontendState === 'danger' ? '#f43f5e' : 'rgba(255,255,255,0.2)', boxShadow: frontendState === 'success' ? '0 0 8px #10b981' : frontendState === 'danger' ? '0 0 8px #f43f5e' : 'none' }} />
-            <Globe className="h-4 w-4 text-[#f59e0b] mb-1" />
-            <h3 className="text-[13px] font-semibold mb-1">Client Application</h3>
-            <p className="text-[11px] font-mono" style={{ color: '#9ca3af' }}>{currentStage === 1 ? 'trusted-app.com' : 'malicious-site.xyz'}</p>
+            <div
+              className="pointer-events-none absolute inset-0 rounded-[14px]"
+              style={{
+                padding: '1px',
+                background:
+                  'linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01))',
+                WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                WebkitMaskComposite: 'xor',
+                maskComposite: 'exclude',
+              }}
+            />
+            <div
+              className="duration-400 absolute right-[10px] top-[10px] h-[6px] w-[6px] rounded-full transition-all"
+              style={{
+                background:
+                  frontendState === 'success'
+                    ? '#10b981'
+                    : frontendState === 'danger'
+                      ? '#f43f5e'
+                      : 'rgba(255,255,255,0.2)',
+                boxShadow:
+                  frontendState === 'success'
+                    ? '0 0 8px #10b981'
+                    : frontendState === 'danger'
+                      ? '0 0 8px #f43f5e'
+                      : 'none',
+              }}
+            />
+            <Globe className="mb-1 h-4 w-4 text-[#f59e0b]" />
+            <h3 className="mb-1 text-[13px] font-semibold">Client Application</h3>
+            <p className="font-mono text-[11px]" style={{ color: '#9ca3af' }}>
+              {currentStage === 1 ? 'trusted-app.com' : 'malicious-site.xyz'}
+            </p>
           </div>
 
           <div
-            className={cn('relative flex flex-col items-center justify-center rounded-[14px] z-[2] transition-all duration-500', isVertical ? 'w-[140px] h-[80px]' : 'w-[150px] h-[110px]', browserState === 'success' && 'border-[#10b981] shadow-[0_0_20px_rgba(16,185,129,0.15)]', browserState === 'danger' && 'border-[#f43f5e] shadow-[0_0_20px_rgba(244,63,94,0.15)]', browserState === 'default' && 'border-[rgba(56,189,248,0.3)]')}
-            style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)' }}
+            className={cn(
+              'relative z-[2] flex flex-col items-center justify-center rounded-[14px] transition-all duration-500',
+              isVertical ? 'h-[80px] w-[140px]' : 'h-[110px] w-[150px]',
+              browserState === 'success' &&
+                'border-[#10b981] shadow-[0_0_20px_rgba(16,185,129,0.15)]',
+              browserState === 'danger' &&
+                'border-[#f43f5e] shadow-[0_0_20px_rgba(244,63,94,0.15)]',
+              browserState === 'default' && 'border-[rgba(56,189,248,0.3)]'
+            )}
+            style={{
+              background: 'rgba(15, 23, 42, 0.6)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)',
+            }}
           >
-            <div className="absolute inset-0 rounded-[14px] pointer-events-none" style={{ padding: '1px', background: 'linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01))', WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude' }} />
-            <div className="absolute top-[10px] right-[10px] w-[6px] h-[6px] rounded-full transition-all duration-400" style={{ background: browserState === 'success' ? '#10b981' : browserState === 'danger' ? '#f43f5e' : 'rgba(255,255,255,0.2)', boxShadow: browserState === 'success' ? '0 0 8px #10b981' : browserState === 'danger' ? '0 0 8px #f43f5e' : 'none' }} />
-            <Shield className="h-4 w-4 text-[#38bdf8] mb-1" />
-            <h3 className="text-[13px] font-semibold mb-1">Web Browser</h3>
-            <p className="text-[11px] font-mono" style={{ color: '#9ca3af' }}>Security Agent</p>
+            <div
+              className="pointer-events-none absolute inset-0 rounded-[14px]"
+              style={{
+                padding: '1px',
+                background:
+                  'linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01))',
+                WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                WebkitMaskComposite: 'xor',
+                maskComposite: 'exclude',
+              }}
+            />
+            <div
+              className="duration-400 absolute right-[10px] top-[10px] h-[6px] w-[6px] rounded-full transition-all"
+              style={{
+                background:
+                  browserState === 'success'
+                    ? '#10b981'
+                    : browserState === 'danger'
+                      ? '#f43f5e'
+                      : 'rgba(255,255,255,0.2)',
+                boxShadow:
+                  browserState === 'success'
+                    ? '0 0 8px #10b981'
+                    : browserState === 'danger'
+                      ? '0 0 8px #f43f5e'
+                      : 'none',
+              }}
+            />
+            <Shield className="mb-1 h-4 w-4 text-[#38bdf8]" />
+            <h3 className="mb-1 text-[13px] font-semibold">Web Browser</h3>
+            <p className="font-mono text-[11px]" style={{ color: '#9ca3af' }}>
+              Security Agent
+            </p>
           </div>
 
           <div
-            className={cn('relative flex flex-col items-center justify-center rounded-[14px] z-[2] transition-all duration-500', isVertical ? 'w-[140px] h-[80px]' : 'w-[150px] h-[110px]', backendState === 'success' && 'border-[#10b981] shadow-[0_0_20px_rgba(16,185,129,0.15)]', backendState === 'danger' && 'border-[#f43f5e] shadow-[0_0_20px_rgba(244,63,94,0.15)]', backendState === 'default' && 'border-[rgba(156,163,175,0.3)]')}
-            style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)' }}
+            className={cn(
+              'relative z-[2] flex flex-col items-center justify-center rounded-[14px] transition-all duration-500',
+              isVertical ? 'h-[80px] w-[140px]' : 'h-[110px] w-[150px]',
+              backendState === 'success' &&
+                'border-[#10b981] shadow-[0_0_20px_rgba(16,185,129,0.15)]',
+              backendState === 'danger' &&
+                'border-[#f43f5e] shadow-[0_0_20px_rgba(244,63,94,0.15)]',
+              backendState === 'default' && 'border-[rgba(156,163,175,0.3)]'
+            )}
+            style={{
+              background: 'rgba(15, 23, 42, 0.6)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)',
+            }}
           >
-            <div className="absolute inset-0 rounded-[14px] pointer-events-none" style={{ padding: '1px', background: 'linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01))', WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)', WebkitMaskComposite: 'xor', maskComposite: 'exclude' }} />
-            <div className="absolute top-[10px] right-[10px] w-[6px] h-[6px] rounded-full transition-all duration-400" style={{ background: backendState === 'success' ? '#10b981' : backendState === 'danger' ? '#f43f5e' : 'rgba(255,255,255,0.2)', boxShadow: backendState === 'success' ? '0 0 8px #10b981' : backendState === 'danger' ? '0 0 8px #f43f5e' : 'none' }} />
-            <Server className="h-4 w-4 text-[#9ca3af] mb-1" />
-            <h3 className="text-[13px] font-semibold mb-1">Server Host</h3>
-            <p className="text-[11px] font-mono" style={{ color: '#9ca3af' }}>api.server.com</p>
+            <div
+              className="pointer-events-none absolute inset-0 rounded-[14px]"
+              style={{
+                padding: '1px',
+                background:
+                  'linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01))',
+                WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                WebkitMaskComposite: 'xor',
+                maskComposite: 'exclude',
+              }}
+            />
+            <div
+              className="duration-400 absolute right-[10px] top-[10px] h-[6px] w-[6px] rounded-full transition-all"
+              style={{
+                background:
+                  backendState === 'success'
+                    ? '#10b981'
+                    : backendState === 'danger'
+                      ? '#f43f5e'
+                      : 'rgba(255,255,255,0.2)',
+                boxShadow:
+                  backendState === 'success'
+                    ? '0 0 8px #10b981'
+                    : backendState === 'danger'
+                      ? '0 0 8px #f43f5e'
+                      : 'none',
+              }}
+            />
+            <Server className="mb-1 h-4 w-4 text-[#9ca3af]" />
+            <h3 className="mb-1 text-[13px] font-semibold">Server Host</h3>
+            <p className="font-mono text-[11px]" style={{ color: '#9ca3af' }}>
+              api.server.com
+            </p>
           </div>
 
           <div
-            className="absolute flex flex-col items-center justify-center rounded-[10px] z-[3] pointer-events-none transition-all duration-1000"
-            style={{ width: '120px', height: '48px', background: 'rgba(15, 23, 42, 0.9)', border: `1px solid ${packetBorderColor}`, boxShadow: packetShadow, left: packetStyle.left, top: packetStyle.top, opacity: packetState === 'idle' ? 0 : 1 }}
+            className="pointer-events-none absolute z-[3] flex flex-col items-center justify-center rounded-[10px] transition-all duration-1000"
+            style={{
+              width: '120px',
+              height: '48px',
+              background: 'rgba(15, 23, 42, 0.9)',
+              border: `1px solid ${packetBorderColor}`,
+              boxShadow: packetShadow,
+              left: packetStyle.left,
+              top: packetStyle.top,
+              opacity: packetState === 'idle' ? 0 : 1,
+            }}
           >
-            <span className="text-[10px] font-semibold tracking-wider uppercase text-white">{packetLabel}</span>
-            <span className="text-[8px] font-mono mt-0.5 max-w-[100px] truncate" style={{ color: '#9ca3af' }}>{packetSubtext}</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-white">
+              {packetLabel}
+            </span>
+            <span
+              className="mt-0.5 max-w-[100px] truncate font-mono text-[8px]"
+              style={{ color: '#9ca3af' }}
+            >
+              {packetSubtext}
+            </span>
           </div>
         </div>
 
-        <div className="rounded-[16px] p-[18px] font-mono text-[12px] leading-relaxed min-h-[110px] relative" style={{ background: 'rgba(10, 15, 26, 0.85)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.8)', color: '#94a3b8' }}>
-          <div className="flex items-center justify-between mb-3 pb-2 text-[10px] uppercase tracking-widest" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', color: '#475569' }}>
+        <div
+          className="relative min-h-[110px] rounded-[16px] p-[18px] font-mono text-[12px] leading-relaxed"
+          style={{
+            background: 'rgba(10, 15, 26, 0.85)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.8)',
+            color: '#94a3b8',
+          }}
+        >
+          <div
+            className="mb-3 flex items-center justify-between pb-2 text-[10px] uppercase tracking-widest"
+            style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', color: '#475569' }}
+          >
             <span>Process Console</span>
             <div className="flex gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-[#ef4444]" />
-              <div className="w-2 h-2 rounded-full bg-[#f59e0b]" />
-              <div className="w-2 h-2 rounded-full bg-[#10b981]" />
+              <div className="h-2 w-2 rounded-full bg-[#ef4444]" />
+              <div className="h-2 w-2 rounded-full bg-[#f59e0b]" />
+              <div className="h-2 w-2 rounded-full bg-[#10b981]" />
             </div>
           </div>
           <div>
             {logs.length === 0 && (
               <div className="flex">
-                <span className="text-[#38bdf8] mr-2 select-none">$</span>
+                <span className="mr-2 select-none text-[#38bdf8]">$</span>
                 <span>Initializing system sequence...</span>
               </div>
             )}
