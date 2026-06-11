@@ -1,6 +1,6 @@
 import { ViewportPreset } from './viewportPresets';
 import { LoginPeekingCharacter } from '@/designs/login';
-import { LampToggle, OTPVerificationModal } from '@/designs/components';
+import { LampToggle, OTPVerificationModal, ThreeDCardDesign } from '@/designs/components';
 import { NginxBlueGreen, CorsAllowedOrigins } from '@/designs/dashboard';
 import { WorkflowSchema } from '@/designs/chatbot';
 
@@ -1094,8 +1094,30 @@ IMPORTANT:
 External NPM dependencies: none
 Internal dependencies: @/lib/utils (cn helper)
 Steps to integrate:
- 0. Copy paste all the code above in the correct directories
- 1. Ensure @/lib/utils has the cn helper (standard shadcn setup)`,
+  0. Copy paste all the code above in the correct directories
+  1. Ensure @/lib/utils has the cn helper (standard shadcn setup)`,
+  },
+  {
+    id: '3d-card-design',
+    categoryId: 'components',
+    title: '3D Perspective Card',
+    description:
+      'A card with 3D tilt effect that follows cursor movement using CSS perspective transforms. Pure CSS, no external dependencies.',
+    component: ThreeDCardDesign,
+    tags: ['3d', 'card', 'perspective', 'interactive', 'css-transform', 'hover-effect'],
+    recommendedViewport: {
+      width: 1440,
+      height: 900,
+      label: 'Desktop 1440\u00d7900',
+      deviceType: 'desktop',
+    },
+    prompt: `Create a 3D perspective card component using React and Tailwind CSS.
+The card must tilt in 3D space following the user's cursor position using CSS perspective and rotateY/rotateX transforms.
+Include individual card items that animate on hover with different translateZ values for a layered depth effect.
+Use a dark gradient background, a code editor workspace image, and developer-focused content.
+Title: "CSS 3D Perspective Transform"
+Description: Explain the CSS perspective effect.
+Two CTAs: "View Source" (text link) and "Explore" (filled emerald button).`,
   },
   {
     id: 'workflow-schema',
