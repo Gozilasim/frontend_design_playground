@@ -5,12 +5,14 @@ import {
   useRef,
   useEffect,
   useId,
-  useMemo,
   useCallback,
   type ChangeEvent,
 } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useSpring, useTransform } from 'motion/react';
 import { cn } from '@/lib/utils';
+
+// Negative value = gap between bubble and pill; positive = overlap (gooey merge).
+const DEFAULT_EXPANDED_OFFSET_PX = -8;
 
 function GooeyFilter({ filterId, blur }: { filterId: string; blur: number }) {
   return (
@@ -50,10 +52,19 @@ function SearchIcon({ layoutId }: { layoutId: string }) {
   );
 }
 
-const transition = {
-  duration: 0.4,
+// Silky spring — used for every spatial animation.
+const springTransition = {
   type: 'spring' as const,
-  bounce: 0.25,
+  stiffness: 380,
+  damping: 36,
+  mass: 1,
+};
+
+// Softer spring for enter/exit scale pops.
+const popTransition = {
+  type: 'spring' as const,
+  stiffness: 320,
+  damping: 28,
 };
 
 export interface GooeyInputClassNames {
@@ -68,10 +79,18 @@ export interface GooeyInputClassNames {
 
 export interface GooeyInputProps {
   placeholder?: string;
+  /** Override placeholder at runtime (e.g. on category hover). Falls back to `placeholder`. */
+  activePlaceholder?: string;
   className?: string;
   classNames?: GooeyInputClassNames;
   collapsedWidth?: number;
   expandedWidth?: number;
+  /**
+   * Offset in px between bubble and pill when expanded.
+   * Negative = visible gap (separated look).
+   * Positive = overlap (gooey-merged look).
+   * Default: -8 (gap).
+   */
   expandedOffset?: number;
   gooeyBlur?: number;
   value?: string;
@@ -79,27 +98,30 @@ export interface GooeyInputProps {
   onValueChange?: (value: string) => void;
   onOpenChange?: (open: boolean) => void;
   disabled?: boolean;
+  /** Whether to show the separate bubble circle when expanded. Default: true. */
+  showBubble?: boolean;
 }
 
 export function GooeyInput({
   placeholder = 'Type to search...',
+  activePlaceholder,
   className,
   classNames,
   collapsedWidth = 115,
   expandedWidth = 200,
-  expandedOffset = 50,
+  expandedOffset = DEFAULT_EXPANDED_OFFSET_PX,
   gooeyBlur = 5,
   value: valueProp,
   defaultValue = '',
   onValueChange,
   onOpenChange,
   disabled = false,
+  showBubble = true,
 }: GooeyInputProps) {
   const reactId = useId();
   const safeId = reactId.replace(/:/g, '');
   const filterId = `gooey-filter-${safeId}`;
   const iconLayoutId = `gooey-input-icon-${safeId}`;
-  const inputLayoutId = `gooey-input-field-${safeId}`;
 
   const inputRef = useRef<HTMLInputElement>(null);
   const prevExpandedRef = useRef(false);
@@ -136,13 +158,15 @@ export function GooeyInput({
     prevExpandedRef.current = isExpanded;
   }, [isExpanded, setSearchText]);
 
-  const buttonVariants = useMemo(
-    () => ({
-      collapsed: { width: collapsedWidth, marginLeft: 0 },
-      expanded: { width: expandedWidth, marginLeft: expandedOffset },
-    }),
-    [collapsedWidth, expandedWidth, expandedOffset],
-  );
+  // Spring-driven width — silky smooth, no abrupt jumps.
+  const widthSpring = useSpring(collapsedWidth, { stiffness: 380, damping: 36, mass: 1 });
+  // Spring-driven marginLeft — animates together with width.
+  const marginSpring = useSpring(0, { stiffness: 380, damping: 36, mass: 1 });
+
+  useEffect(() => {
+    widthSpring.set(isExpanded ? expandedWidth : collapsedWidth);
+    marginSpring.set(isExpanded ? expandedOffset : 0);
+  }, [isExpanded, expandedWidth, collapsedWidth, expandedOffset, widthSpring, marginSpring]);
 
   const handleExpand = useCallback(() => {
     if (!disabled) setExpanded(true);
@@ -161,6 +185,16 @@ export function GooeyInput({
 
   const surfaceClass = 'bg-foreground text-background shadow-sm ring-1 ring-border/60';
 
+  const resolvedPlaceholder = activePlaceholder ?? placeholder;
+
+  const inputClassName = cn(
+    'h-full min-w-0 flex-1 appearance-none bg-transparent py-0 text-sm leading-none text-background outline-none',
+    '[&::-webkit-search-cancel-button]:hidden',
+    '[&::-webkit-input-placeholder]:opacity-0 placeholder:opacity-0',
+    !isExpanded && 'pointer-events-none',
+    classNames?.input,
+  );
+
   return (
     <div
       className={cn('relative flex items-center justify-center', className, classNames?.root)}
@@ -168,61 +202,21 @@ export function GooeyInput({
       <GooeyFilter filterId={filterId} blur={gooeyBlur} />
 
       <div
-        className={cn('relative flex h-10 items-center justify-center', classNames?.filterWrap)}
+        className={cn('relative flex h-10 items-center', classNames?.filterWrap)}
         style={{ filter: `url(#${filterId})` }}
       >
-        <motion.div
-          className={cn('flex h-10 items-center justify-center', classNames?.buttonRow)}
-          variants={buttonVariants}
-          initial="collapsed"
-          animate={isExpanded ? 'expanded' : 'collapsed'}
-          transition={transition}
-        >
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={handleExpand}
-            className={cn(
-              'flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-full px-4 text-sm font-medium outline-none transition-[color,box-shadow] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50',
-              surfaceClass,
-              classNames?.trigger,
-            )}
-          >
-            {!isExpanded ? <SearchIcon layoutId={iconLayoutId} /> : null}
-            <motion.input
-              layoutId={inputLayoutId}
-              ref={inputRef}
-              type="search"
-              enterKeyHint="search"
-              autoComplete="off"
-              value={searchText}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              disabled={disabled || !isExpanded}
-              placeholder={placeholder}
-              className={cn(
-                'h-full min-w-0 flex-1 bg-transparent text-sm text-background outline-none',
-                isExpanded
-                  ? 'placeholder:text-background/50 dark:placeholder:text-background/45'
-                  : 'pointer-events-none placeholder:text-background/80 dark:placeholder:text-background/70',
-                classNames?.input,
-              )}
-            />
-          </button>
-        </motion.div>
-
         <AnimatePresence>
-          {isExpanded && (
+          {isExpanded && showBubble && (
             <motion.div
               key="bubble"
               className={cn(
-                'absolute top-1/2 left-0 flex size-10 -translate-y-1/2 items-center justify-center',
+                'relative flex h-10 w-10 shrink-0 items-center justify-center',
                 classNames?.bubble,
               )}
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}
-              transition={transition}
+              transition={popTransition}
             >
               <div
                 className={cn(
@@ -236,6 +230,61 @@ export function GooeyInput({
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Width + marginLeft both driven by springs for silky motion */}
+        <motion.div
+          className={cn('flex h-10 items-center', classNames?.buttonRow)}
+          style={{ width: widthSpring, marginLeft: marginSpring }}
+        >
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={handleExpand}
+            className={cn(
+              'relative flex h-10 w-full cursor-pointer items-center gap-2 rounded-full px-4 text-sm font-medium outline-none transition-[color,box-shadow] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50',
+              surfaceClass,
+              classNames?.trigger,
+            )}
+          >
+            {!isExpanded ? <SearchIcon layoutId={iconLayoutId} /> : null}
+
+            {/* Animated placeholder overlay — fades & slides on text change */}
+            <AnimatePresence mode="wait">
+              {!searchText && (
+                <motion.span
+                  key={resolvedPlaceholder}
+                  className="pointer-events-none absolute left-0 top-0 flex h-full w-full items-center px-4 text-sm leading-none select-none"
+                  style={{ paddingLeft: isExpanded ? '1rem' : '2.25rem' }}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -5 }}
+                  transition={{ duration: 0.18, ease: 'easeOut' }}
+                >
+                  <span
+                    className={cn(
+                      'truncate text-background/60',
+                      !isExpanded && 'text-background/80',
+                    )}
+                  >
+                    {resolvedPlaceholder}
+                  </span>
+                </motion.span>
+              )}
+            </AnimatePresence>
+
+            <input
+              ref={inputRef}
+              type="search"
+              enterKeyHint="search"
+              autoComplete="off"
+              value={searchText}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              disabled={disabled || !isExpanded}
+              className={inputClassName}
+            />
+          </button>
+        </motion.div>
       </div>
     </div>
   );
