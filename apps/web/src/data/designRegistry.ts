@@ -1,6 +1,6 @@
 import { ViewportPreset } from './viewportPresets';
 import { LoginPeekingCharacter } from '@/designs/login';
-import { LampToggle, OTPVerificationModal, ThreeDCardDesign } from '@/designs/components';
+import { LampToggle, OTPVerificationModal, ThreeDCardDesign, GooeyInputDesign } from '@/designs/components';
 import { NginxBlueGreen, CorsAllowedOrigins } from '@/designs/dashboard';
 import { WorkflowSchema } from '@/designs/chatbot';
 
@@ -1118,6 +1118,26 @@ Use a dark gradient background, a code editor workspace image, and developer-foc
 Title: "CSS 3D Perspective Transform"
 Description: Explain the CSS perspective effect.
 Two CTAs: "View Source" (text link) and "Explore" (filled emerald button).`,
+  },
+  {
+    id: 'gooey-input',
+    categoryId: 'components',
+    title: 'Gooey Search Input',
+    description:
+      'A morphing search input with gooey SVG filter animation that expands on click with spring physics.',
+    component: GooeyInputDesign,
+    tags: ['gooey', 'search', 'input', 'animation', 'morphing', 'interactive', 'spring'],
+    recommendedViewport: {
+      width: 1440,
+      height: 900,
+      label: 'Desktop 1440×900',
+      deviceType: 'desktop',
+    },
+    prompt: `Create a gooey search input component using React, Tailwind CSS, and Motion (Framer Motion).
+The input must use an SVG filter with feGaussianBlur and feColorMatrix to create a gooey/liquid effect.
+On click, the search icon separates into a floating bubble while the input expands with spring animation.
+Use layoutId for smooth icon transitions between collapsed and expanded states.
+Include controlled and uncontrolled usage patterns, custom classNames API, and proper focus/blur handling.`,
   },
   {
     id: 'workflow-schema',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, Suspense, lazy, ComponentType } from 'react';
+import { Suspense, lazy, ComponentType } from 'react';
 import { useDesignContext } from '@/providers/DesignProvider';
 import { getDesignById } from '@/data/designRegistry';
 import { DesignProps } from '@/data/designRegistry';

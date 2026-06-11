@@ -4,3 +4,4 @@ export * from './Separator';
 export * from './IconButton';
 export * from './DropdownPortal';
 export * from './3d-card';
+export * from './gooey-input';
